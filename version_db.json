@@ -1,0 +1,4 @@
+{
+  "openai/openai-python": "v2.15.0",
+  "stripe/stripe-node": "v20.1.2"
+}
