@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "watch": "node watchtower.js"
+    "watch": "node watchtower.js",
+    "watchtower": "node watchtower.js"
   },
   "keywords": [
     "http-402",

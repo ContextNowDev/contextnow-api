@@ -178,67 +178,258 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 // Inventory - Premium API documentation content
+// Organized by category with pricing tiers based on complexity
 const INVENTORY = {
-  'stripe-2026': {
-    content: `# Stripe API Documentation (2026 Edition)
-
-## Payment Intents API
-
-Create a PaymentIntent to initiate a payment flow.
-
-\`\`\`javascript
-const stripe = require('stripe')('sk_test_xxx');
-
-const paymentIntent = await stripe.paymentIntents.create({
-  amount: 2000,
-  currency: 'usd',
-  payment_method_types: ['card'],
-});
-\`\`\`
-
-## New in 2026
-- Neural payment verification
-- Quantum-resistant encryption
-- AI-powered fraud detection v3
-`,
-    price: 0.001
+  // ============================================
+  // AI / LLM DOCUMENTATION
+  // ============================================
+  'openai-python': {
+    name: 'OpenAI Python SDK',
+    content: `# OpenAI Python SDK Documentation (2026 Edition)\n\n## Chat Completions\n\n\`\`\`python\nfrom openai import OpenAI\nclient = OpenAI()\nresponse = client.chat.completions.create(\n    model="gpt-5-turbo",\n    messages=[{"role": "user", "content": "Hello!"}]\n)\n\`\`\`\n\n## Features\n- Native multimodal input\n- Real-time streaming v2\n- Context window: 1M tokens`,
+    price: 0.002,
+    category: 'ai',
+    icon: '🤖',
+    docs: 'https://platform.openai.com/docs'
   },
-  'openai-2026': {
-    content: `# OpenAI Python SDK Documentation (2026 Edition)
-
-## Chat Completions
-
-\`\`\`python
-from openai import OpenAI
-
-client = OpenAI()
-
-response = client.chat.completions.create(
-    model="gpt-5-turbo",
-    messages=[
-        {"role": "user", "content": "Hello!"}
-    ]
-)
-\`\`\`
-
-## New in 2026
-- Native multimodal input
-- Real-time streaming v2
-- Context window: 1M tokens
-`,
-    price: 0.002
+  'anthropic-claude': {
+    name: 'Anthropic Claude SDK',
+    content: `# Anthropic Claude SDK Documentation (2026 Edition)\n\n## Messages API\n\n\`\`\`python\nimport anthropic\nclient = anthropic.Anthropic()\nmessage = client.messages.create(\n    model="claude-4-opus",\n    max_tokens=1024,\n    messages=[{"role": "user", "content": "Hello, Claude!"}]\n)\n\`\`\`\n\n## Features\n- Extended thinking mode\n- Computer use capabilities\n- 500K context window`,
+    price: 0.002,
+    category: 'ai',
+    icon: '🧠',
+    docs: 'https://docs.anthropic.com'
   },
-  'combined-bundle': {
-    content: `# Premium API Bundle
+  'langchain-python': {
+    name: 'LangChain Python',
+    content: `# LangChain Python Documentation (2026 Edition)\n\n## Chains & Agents\n\n\`\`\`python\nfrom langchain_openai import ChatOpenAI\nfrom langchain.agents import create_tool_calling_agent\n\nllm = ChatOpenAI(model="gpt-5-turbo")\nagent = create_tool_calling_agent(llm, tools, prompt)\n\`\`\`\n\n## Features\n- LangGraph integration\n- Tool calling agents\n- RAG pipelines`,
+    price: 0.002,
+    category: 'ai',
+    icon: '🦜',
+    docs: 'https://python.langchain.com/docs'
+  },
+  'langchain-js': {
+    name: 'LangChain JS',
+    content: `# LangChain JS Documentation (2026 Edition)\n\n## Chains & Agents\n\n\`\`\`typescript\nimport { ChatOpenAI } from "@langchain/openai";\nimport { createToolCallingAgent } from "langchain/agents";\n\nconst llm = new ChatOpenAI({ model: "gpt-5-turbo" });\nconst agent = createToolCallingAgent({ llm, tools, prompt });\n\`\`\``,
+    price: 0.002,
+    category: 'ai',
+    icon: '🦜',
+    docs: 'https://js.langchain.com/docs'
+  },
+  'huggingface-transformers': {
+    name: 'Hugging Face Transformers',
+    content: `# Hugging Face Transformers Documentation (2026 Edition)\n\n## Pipeline API\n\n\`\`\`python\nfrom transformers import pipeline\n\nclassifier = pipeline("sentiment-analysis")\nresult = classifier("I love using transformers!")\n\`\`\`\n\n## Features\n- 500K+ pretrained models\n- AutoModel classes\n- Trainer API`,
+    price: 0.002,
+    category: 'ai',
+    icon: '🤗',
+    docs: 'https://huggingface.co/docs/transformers'
+  },
 
-This bundle includes documentation for:
-- Stripe API 2026
-- OpenAI Python SDK 2026
-- Integration patterns and best practices
+  // ============================================
+  // PAYMENTS / FINTECH
+  // ============================================
+  'stripe-node': {
+    name: 'Stripe Node.js SDK',
+    content: `# Stripe Node.js Documentation (2026 Edition)\n\n## Payment Intents\n\n\`\`\`javascript\nconst stripe = require('stripe')('sk_test_xxx');\n\nconst paymentIntent = await stripe.paymentIntents.create({\n  amount: 2000,\n  currency: 'usd',\n  payment_method_types: ['card'],\n});\n\`\`\`\n\n## Features\n- Neural payment verification\n- Quantum-resistant encryption\n- AI fraud detection v3`,
+    price: 0.001,
+    category: 'payments',
+    icon: '💳',
+    docs: 'https://stripe.com/docs/api'
+  },
 
-*Full content delivered upon purchase*
-`,
-    price: 0.005
+  // ============================================
+  // WEB FRAMEWORKS
+  // ============================================
+  'nextjs': {
+    name: 'Next.js',
+    content: `# Next.js Documentation (2026 Edition)\n\n## App Router\n\n\`\`\`typescript\n// app/page.tsx\nexport default function Page() {\n  return <h1>Hello, Next.js!</h1>\n}\n\`\`\`\n\n## Features\n- Server Components by default\n- Streaming & Suspense\n- Turbopack bundler`,
+    price: 0.002,
+    category: 'framework',
+    icon: '▲',
+    docs: 'https://nextjs.org/docs'
+  },
+  'remix': {
+    name: 'Remix',
+    content: `# Remix Documentation (2026 Edition)\n\n## Loaders & Actions\n\n\`\`\`typescript\nexport async function loader({ request }) {\n  const user = await getUser(request);\n  return json({ user });\n}\n\`\`\`\n\n## Features\n- Nested routing\n- Progressive enhancement\n- Web standards focused`,
+    price: 0.002,
+    category: 'framework',
+    icon: '💿',
+    docs: 'https://remix.run/docs'
+  },
+  'astro': {
+    name: 'Astro',
+    content: `# Astro Documentation (2026 Edition)\n\n## Components\n\n\`\`\`astro\n---\nconst name = "Astro";\n---\n<h1>Hello, {name}!</h1>\n\`\`\`\n\n## Features\n- Zero JS by default\n- Content collections\n- Island architecture`,
+    price: 0.002,
+    category: 'framework',
+    icon: '🚀',
+    docs: 'https://docs.astro.build'
+  },
+
+  // ============================================
+  // COMMUNICATION
+  // ============================================
+  'twilio-node': {
+    name: 'Twilio Node.js SDK',
+    content: `# Twilio Node.js Documentation (2026 Edition)\n\n## Send SMS\n\n\`\`\`javascript\nconst twilio = require('twilio');\nconst client = twilio(accountSid, authToken);\n\nawait client.messages.create({\n  body: 'Hello from Twilio!',\n  to: '+1234567890',\n  from: '+0987654321'\n});\n\`\`\``,
+    price: 0.001,
+    category: 'communication',
+    icon: '📱',
+    docs: 'https://www.twilio.com/docs'
+  },
+  'sendgrid-node': {
+    name: 'SendGrid Node.js SDK',
+    content: `# SendGrid Node.js Documentation (2026 Edition)\n\n## Send Email\n\n\`\`\`javascript\nconst sgMail = require('@sendgrid/mail');\nsgMail.setApiKey(process.env.SENDGRID_API_KEY);\n\nawait sgMail.send({\n  to: 'user@example.com',\n  from: 'sender@example.com',\n  subject: 'Hello',\n  text: 'Hello from SendGrid!'\n});\n\`\`\``,
+    price: 0.001,
+    category: 'communication',
+    icon: '📧',
+    docs: 'https://docs.sendgrid.com'
+  },
+
+  // ============================================
+  // DATABASE
+  // ============================================
+  'supabase-js': {
+    name: 'Supabase JS',
+    content: `# Supabase JS Documentation (2026 Edition)\n\n## Client Setup\n\n\`\`\`javascript\nimport { createClient } from '@supabase/supabase-js';\nconst supabase = createClient(url, key);\n\nconst { data } = await supabase\n  .from('posts')\n  .select('*');\n\`\`\`\n\n## Features\n- Realtime subscriptions\n- Auth & Storage\n- Edge Functions`,
+    price: 0.002,
+    category: 'database',
+    icon: '⚡',
+    docs: 'https://supabase.com/docs'
+  },
+  'mongodb-node': {
+    name: 'MongoDB Node.js Driver',
+    content: `# MongoDB Node.js Documentation (2026 Edition)\n\n## CRUD Operations\n\n\`\`\`javascript\nconst { MongoClient } = require('mongodb');\nconst client = new MongoClient(uri);\n\nconst db = client.db('mydb');\nconst docs = await db.collection('users').find({}).toArray();\n\`\`\``,
+    price: 0.001,
+    category: 'database',
+    icon: '🍃',
+    docs: 'https://www.mongodb.com/docs/drivers/node/current'
+  },
+  'planetscale-js': {
+    name: 'PlanetScale Database JS',
+    content: `# PlanetScale JS Documentation (2026 Edition)\n\n## Serverless Driver\n\n\`\`\`javascript\nimport { connect } from '@planetscale/database';\nconst conn = connect({ url: process.env.DATABASE_URL });\n\nconst results = await conn.execute('SELECT * FROM users');\n\`\`\``,
+    price: 0.001,
+    category: 'database',
+    icon: '🪐',
+    docs: 'https://planetscale.com/docs'
+  },
+  'prisma': {
+    name: 'Prisma ORM',
+    content: `# Prisma Documentation (2026 Edition)\n\n## Client Usage\n\n\`\`\`typescript\nimport { PrismaClient } from '@prisma/client';\nconst prisma = new PrismaClient();\n\nconst users = await prisma.user.findMany({\n  include: { posts: true }\n});\n\`\`\`\n\n## Features\n- Type-safe queries\n- Auto-generated migrations\n- Prisma Studio`,
+    price: 0.002,
+    category: 'database',
+    icon: '🔷',
+    docs: 'https://www.prisma.io/docs'
+  },
+  'drizzle-orm': {
+    name: 'Drizzle ORM',
+    content: `# Drizzle ORM Documentation (2026 Edition)\n\n## Query Builder\n\n\`\`\`typescript\nimport { drizzle } from 'drizzle-orm/node-postgres';\nimport { users } from './schema';\n\nconst db = drizzle(pool);\nconst allUsers = await db.select().from(users);\n\`\`\`\n\n## Features\n- SQL-like syntax\n- Zero dependencies\n- Drizzle Kit migrations`,
+    price: 0.002,
+    category: 'database',
+    icon: '💧',
+    docs: 'https://orm.drizzle.team/docs'
+  },
+
+  // ============================================
+  // INFRASTRUCTURE
+  // ============================================
+  'vercel': {
+    name: 'Vercel CLI & SDK',
+    content: `# Vercel Documentation (2026 Edition)\n\n## Deploy\n\n\`\`\`bash\n# Deploy to production\nvercel --prod\n\n# Set environment variables\nvercel env add SECRET production\n\`\`\`\n\n## Features\n- Edge Functions\n- Preview deployments\n- Analytics & Speed Insights`,
+    price: 0.001,
+    category: 'infrastructure',
+    icon: '▲',
+    docs: 'https://vercel.com/docs'
+  },
+  'railway': {
+    name: 'Railway CLI',
+    content: `# Railway Documentation (2026 Edition)\n\n## Deploy\n\n\`\`\`bash\n# Deploy from current directory\nrailway up\n\n# Link to project\nrailway link\n\`\`\`\n\n## Features\n- Instant deployments\n- Database provisioning\n- Automatic scaling`,
+    price: 0.001,
+    category: 'infrastructure',
+    icon: '🚂',
+    docs: 'https://docs.railway.app'
+  },
+
+  // ============================================
+  // WEB3 / BLOCKCHAIN
+  // ============================================
+  'wagmi': {
+    name: 'wagmi',
+    content: `# wagmi Documentation (2026 Edition)\n\n## React Hooks\n\n\`\`\`typescript\nimport { useAccount, useConnect } from 'wagmi';\n\nfunction App() {\n  const { address, isConnected } = useAccount();\n  const { connect, connectors } = useConnect();\n}\n\`\`\`\n\n## Features\n- 40+ React hooks\n- TypeScript native\n- Wallet connectors`,
+    price: 0.002,
+    category: 'web3',
+    icon: '🔗',
+    docs: 'https://wagmi.sh'
+  },
+  'viem': {
+    name: 'viem',
+    content: `# viem Documentation (2026 Edition)\n\n## Client Setup\n\n\`\`\`typescript\nimport { createPublicClient, http } from 'viem';\nimport { mainnet } from 'viem/chains';\n\nconst client = createPublicClient({\n  chain: mainnet,\n  transport: http()\n});\n\`\`\`\n\n## Features\n- TypeScript native\n- Modular & tree-shakeable\n- 99% test coverage`,
+    price: 0.002,
+    category: 'web3',
+    icon: '💎',
+    docs: 'https://viem.sh'
+  },
+  'solana-web3': {
+    name: 'Solana Web3.js',
+    content: `# Solana Web3.js Documentation (2026 Edition)\n\n## Transaction\n\n\`\`\`javascript\nimport { Connection, PublicKey } from '@solana/web3.js';\n\nconst connection = new Connection('https://api.mainnet-beta.solana.com');\nconst balance = await connection.getBalance(publicKey);\n\`\`\`\n\n## Features\n- Full RPC client\n- Transaction building\n- Account management`,
+    price: 0.002,
+    category: 'web3',
+    icon: '◎',
+    docs: 'https://solana-labs.github.io/solana-web3.js'
+  },
+  'ethers': {
+    name: 'Ethers.js',
+    content: `# Ethers.js Documentation (2026 Edition)\n\n## Provider & Signer\n\n\`\`\`javascript\nimport { ethers } from 'ethers';\n\nconst provider = new ethers.BrowserProvider(window.ethereum);\nconst signer = await provider.getSigner();\nconst balance = await provider.getBalance(address);\n\`\`\``,
+    price: 0.002,
+    category: 'web3',
+    icon: '⟠',
+    docs: 'https://docs.ethers.org'
+  },
+
+  // ============================================
+  // TESTING
+  // ============================================
+  'vitest': {
+    name: 'Vitest',
+    content: `# Vitest Documentation (2026 Edition)\n\n## Test Example\n\n\`\`\`typescript\nimport { describe, it, expect } from 'vitest';\n\ndescribe('math', () => {\n  it('adds numbers', () => {\n    expect(1 + 1).toBe(2);\n  });\n});\n\`\`\`\n\n## Features\n- Vite-native\n- Jest compatible\n- Browser mode`,
+    price: 0.001,
+    category: 'testing',
+    icon: '⚡',
+    docs: 'https://vitest.dev'
+  },
+  'playwright': {
+    name: 'Playwright',
+    content: `# Playwright Documentation (2026 Edition)\n\n## E2E Test\n\n\`\`\`typescript\nimport { test, expect } from '@playwright/test';\n\ntest('homepage', async ({ page }) => {\n  await page.goto('https://example.com');\n  await expect(page).toHaveTitle(/Example/);\n});\n\`\`\`\n\n## Features\n- Cross-browser testing\n- Auto-wait & assertions\n- Trace viewer`,
+    price: 0.001,
+    category: 'testing',
+    icon: '🎭',
+    docs: 'https://playwright.dev/docs'
+  },
+
+  // ============================================
+  // BUNDLES
+  // ============================================
+  'bundle-ai': {
+    name: 'AI/LLM Bundle',
+    content: `# AI/LLM Documentation Bundle\n\nIncludes all AI documentation:\n- OpenAI Python SDK\n- Anthropic Claude SDK\n- LangChain Python & JS\n- Hugging Face Transformers\n\n*Complete documentation delivered upon purchase*`,
+    price: 0.008,
+    category: 'bundle',
+    icon: '📦',
+    docs: '/catalog'
+  },
+  'bundle-web3': {
+    name: 'Web3 Bundle',
+    content: `# Web3 Documentation Bundle\n\nIncludes all Web3 documentation:\n- wagmi\n- viem\n- Solana Web3.js\n- Ethers.js\n\n*Complete documentation delivered upon purchase*`,
+    price: 0.006,
+    category: 'bundle',
+    icon: '📦',
+    docs: '/catalog'
+  },
+  'bundle-all': {
+    name: 'Complete Bundle',
+    content: `# Complete Documentation Bundle\n\nIncludes ALL 24 documentation packages:\n- 5 AI/LLM libraries\n- 5 Database libraries\n- 4 Web3 libraries\n- 3 Web frameworks\n- And more...\n\n*Best value - save 50%*`,
+    price: 0.025,
+    category: 'bundle',
+    icon: '🎁',
+    docs: '/catalog'
   }
 };
 
@@ -989,45 +1180,65 @@ app.get('/', (req, res) => {
 
 // Catalog Page HTML Generator
 function generateCatalogPage() {
-  const productData = {
-    'stripe-2026': {
-      name: 'Stripe API 2026',
-      description: 'Complete Stripe SDK documentation with Payment Intents, neural verification, and quantum-resistant encryption.',
-      icon: '💳',
-      features: ['Payment Intents API', 'Webhooks & Events', 'Fraud Detection v3']
-    },
-    'openai-2026': {
-      name: 'OpenAI SDK 2026',
-      description: 'Python SDK documentation for GPT-5, multimodal input, and 1M token context windows.',
-      icon: '🤖',
-      features: ['Chat Completions', 'Embeddings API', 'Function Calling']
-    },
-    'combined-bundle': {
-      name: 'Premium Bundle',
-      description: 'Everything included: Stripe + OpenAI docs with integration patterns and best practices.',
-      icon: '📦',
-      features: ['All Documentation', 'Integration Patterns', 'Best Practices']
-    }
+  // Category display configuration
+  const categoryConfig = {
+    'bundle': { title: 'Bundles', subtitle: 'Best value - save up to 50%', order: 0 },
+    'ai': { title: 'AI / LLM', subtitle: 'OpenAI, Anthropic, LangChain & more', order: 1 },
+    'database': { title: 'Database', subtitle: 'ORMs, drivers & serverless databases', order: 2 },
+    'web3': { title: 'Web3 / Blockchain', subtitle: 'Ethereum, Solana & wallet libraries', order: 3 },
+    'framework': { title: 'Web Frameworks', subtitle: 'Next.js, Remix, Astro', order: 4 },
+    'communication': { title: 'Communication', subtitle: 'SMS, email & messaging', order: 5 },
+    'infrastructure': { title: 'Infrastructure', subtitle: 'Deployment & hosting', order: 6 },
+    'payments': { title: 'Payments', subtitle: 'Payment processing', order: 7 },
+    'testing': { title: 'Testing', subtitle: 'Unit & E2E testing', order: 8 }
   };
 
-  const cards = Object.entries(INVENTORY).map(([id, item]) => {
-    const meta = productData[id];
-    const isBundle = id === 'combined-bundle';
-    return `
-      <div class="product-card${isBundle ? ' featured' : ''}">
-        ${isBundle ? '<div class="featured-badge">BEST VALUE</div>' : ''}
-        <div class="product-icon">${meta.icon}</div>
-        <h3>${meta.name}</h3>
-        <p class="product-description">${meta.description}</p>
-        <div class="product-price">
-          <span class="price-amount">$${item.price}</span>
-          <span class="price-unit">per request</span>
+  // Group items by category
+  const byCategory = {};
+  Object.entries(INVENTORY).forEach(([id, item]) => {
+    const cat = item.category || 'other';
+    if (!byCategory[cat]) byCategory[cat] = [];
+    byCategory[cat].push({ id, ...item });
+  });
+
+  // Sort categories by order
+  const sortedCategories = Object.keys(byCategory).sort((a, b) => {
+    return (categoryConfig[a]?.order ?? 99) - (categoryConfig[b]?.order ?? 99);
+  });
+
+  // Generate HTML for each category section
+  const sections = sortedCategories.map(cat => {
+    const config = categoryConfig[cat] || { title: cat, subtitle: '' };
+    const items = byCategory[cat];
+
+    const cards = items.map(item => {
+      const isBundle = item.category === 'bundle';
+      const isFeatured = item.id === 'bundle-all';
+      return `
+        <div class="product-card${isFeatured ? ' featured' : ''}">
+          ${isFeatured ? '<div class="featured-badge">BEST VALUE</div>' : ''}
+          <div class="product-icon">${item.icon}</div>
+          <h3>${item.name}</h3>
+          <div class="product-price">
+            <span class="price-amount">${item.price}</span>
+            <span class="price-unit">USDC</span>
+          </div>
+          <a href="/buy/${item.id}" class="btn btn-purchase">Purchase</a>
+          ${item.docs && item.docs !== '/catalog' ? `<a href="${item.docs}" class="docs-link" target="_blank">Official Docs →</a>` : ''}
         </div>
-        <ul class="product-features">
-          ${meta.features.map(f => `<li>${f}</li>`).join('')}
-        </ul>
-        <a href="/buy/${id}" class="btn btn-purchase">Purchase Documentation</a>
-      </div>
+      `;
+    }).join('');
+
+    return `
+      <section class="category-section">
+        <div class="category-header">
+          <h2>${config.title}</h2>
+          <p>${config.subtitle}</p>
+        </div>
+        <div class="products-grid">
+          ${cards}
+        </div>
+      </section>
     `;
   }).join('');
 
@@ -1139,39 +1350,62 @@ function generateCatalogPage() {
       margin: 0 auto;
     }
 
-    .products-section {
-      padding: 40px 0 80px;
+    .category-section {
+      padding: 40px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .category-section:last-child {
+      border-bottom: none;
+    }
+
+    .category-header {
+      margin-bottom: 32px;
+    }
+
+    .category-header h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .category-header p {
+      color: var(--text-dim);
+      font-size: 0.95rem;
     }
 
     .products-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-    }
-
-    @media (max-width: 1024px) {
-      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
     }
 
     @media (max-width: 640px) {
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 400px) {
       .products-grid { grid-template-columns: 1fr; }
     }
 
     .product-card {
       background: var(--bg-secondary);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
+      border-radius: 12px;
+      padding: 20px;
       position: relative;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      text-align: center;
     }
 
     .product-card:hover {
-      transform: translateY(-8px);
+      transform: translateY(-4px);
       border-color: var(--blue);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 40px var(--blue-glow);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
     }
 
     .product-card.featured {
@@ -1181,115 +1415,93 @@ function generateCatalogPage() {
 
     .product-card.featured:hover {
       border-color: var(--indigo);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 40px rgba(99, 102, 241, 0.3);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(99, 102, 241, 0.2);
     }
 
     .featured-badge {
       position: absolute;
-      top: -12px;
+      top: -10px;
       left: 50%;
       transform: translateX(-50%);
       background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-dim) 100%);
       color: white;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 0.75rem;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.65rem;
       font-weight: 700;
       letter-spacing: 0.5px;
     }
 
     .product-icon {
-      font-size: 3rem;
-      margin-bottom: 20px;
+      font-size: 2rem;
+      margin-bottom: 12px;
     }
 
     .product-card h3 {
-      font-size: 1.5rem;
-      font-weight: 700;
+      font-size: 0.95rem;
+      font-weight: 600;
       margin-bottom: 12px;
       color: var(--text-primary);
-    }
-
-    .product-description {
-      color: var(--text-secondary);
-      font-size: 0.95rem;
-      margin-bottom: 24px;
-      flex-grow: 1;
+      line-height: 1.3;
     }
 
     .product-price {
       display: flex;
       align-items: baseline;
-      gap: 8px;
-      margin-bottom: 24px;
-      padding: 16px;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 16px;
+      padding: 8px 12px;
       background: var(--bg-primary);
-      border-radius: 12px;
+      border-radius: 8px;
+      width: 100%;
     }
 
     .price-amount {
-      font-size: 2rem;
+      font-size: 1.25rem;
       font-weight: 700;
       color: var(--blue);
     }
 
     .price-unit {
       color: var(--text-dim);
-      font-size: 0.9rem;
-    }
-
-    .product-features {
-      list-style: none;
-      margin-bottom: 24px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-
-    .product-features li {
-      padding: 8px 0;
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.9rem;
-    }
-
-    .product-features li::before {
-      content: '✓';
-      color: var(--blue);
-      font-weight: 700;
-      font-size: 1rem;
-    }
-
-    .product-card.featured .product-features li::before {
-      color: var(--indigo);
+      font-size: 0.75rem;
     }
 
     .btn-purchase {
       display: block;
       width: 100%;
-      padding: 14px 24px;
+      padding: 10px 16px;
       background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dim) 100%);
       color: var(--bg-primary);
       text-decoration: none;
       text-align: center;
-      border-radius: 10px;
+      border-radius: 8px;
       font-weight: 600;
-      font-size: 1rem;
+      font-size: 0.85rem;
       transition: all 0.2s;
     }
 
     .btn-purchase:hover {
       transform: scale(1.02);
-      box-shadow: 0 8px 20px var(--blue-glow);
+      box-shadow: 0 4px 12px var(--blue-glow);
     }
 
     .product-card.featured .btn-purchase {
       background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-dim) 100%);
     }
 
-    .product-card.featured .btn-purchase:hover {
-      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    .docs-link {
+      display: block;
+      margin-top: 8px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.75rem;
+      transition: color 0.2s;
+    }
+
+    .docs-link:hover {
+      color: var(--blue);
     }
 
     .api-notice {
@@ -1297,7 +1509,7 @@ function generateCatalogPage() {
       padding: 24px;
       background: var(--bg-secondary);
       border-radius: 12px;
-      margin-top: 40px;
+      margin: 40px 0;
       border: 1px solid var(--border);
     }
 
@@ -1313,6 +1525,32 @@ function generateCatalogPage() {
 
     .api-notice a:hover {
       text-decoration: underline;
+    }
+
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      padding: 24px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      margin-bottom: 40px;
+      border: 1px solid var(--border);
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--blue);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-dim);
     }
 
     footer {
@@ -1338,20 +1576,36 @@ function generateCatalogPage() {
   <header class="page-header">
     <div class="container">
       <h1>Documentation Catalog</h1>
-      <p>Premium API documentation for AI agents. Pay only for what you need with HTTP 402 micropayments.</p>
+      <p>27 premium documentation packages. Pay with USDC on Solana.</p>
     </div>
   </header>
 
-  <section class="products-section">
-    <div class="container">
-      <div class="products-grid">
-        ${cards}
+  <main class="container">
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-value">27</div>
+        <div class="stat-label">Packages</div>
       </div>
-      <div class="api-notice">
-        <p>Building an AI agent? Use our <a href="/catalog/json">JSON API endpoint</a> for programmatic access.</p>
+      <div class="stat">
+        <div class="stat-value">9</div>
+        <div class="stat-label">Categories</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">$0.001</div>
+        <div class="stat-label">Min Price</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">~400ms</div>
+        <div class="stat-label">Tx Speed</div>
       </div>
     </div>
-  </section>
+
+    ${sections}
+
+    <div class="api-notice">
+      <p>Building an AI agent? Use our <a href="/catalog/json">JSON API endpoint</a> for programmatic access, or check <a href="/payment-info">payment details</a>.</p>
+    </div>
+  </main>
 
   <footer>
     <div class="container">
@@ -1368,12 +1622,19 @@ app.get('/catalog', (req, res) => {
 });
 
 app.get('/catalog/json', async (req, res) => {
-  const catalog = Object.entries(INVENTORY).map(([key, value]) => ({
-    id: key,
-    price: value.price,
-    currency: 'USDC',
-    preview: value.content.substring(0, 100) + '...'
-  }));
+  // Group items by category
+  const byCategory = {};
+  Object.entries(INVENTORY).forEach(([id, item]) => {
+    const cat = item.category || 'other';
+    if (!byCategory[cat]) byCategory[cat] = [];
+    byCategory[cat].push({
+      id,
+      name: item.name,
+      price: item.price,
+      currency: 'USDC',
+      docs: item.docs
+    });
+  });
 
   let usdcTokenAccount = null;
   try {
@@ -1383,7 +1644,8 @@ app.get('/catalog/json', async (req, res) => {
   } catch (e) {}
 
   res.json({
-    available_items: catalog,
+    total_items: Object.keys(INVENTORY).length,
+    categories: byCategory,
     payment_info: {
       network: 'Solana (Mainnet)',
       currency: 'USDC-SPL',

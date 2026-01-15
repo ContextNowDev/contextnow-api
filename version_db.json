@@ -1,4 +1,26 @@
 {
   "openai/openai-python": "v2.15.0",
-  "stripe/stripe-node": "v20.1.2"
+  "stripe/stripe-node": "v20.1.2",
+  "anthropics/anthropic-sdk-python": "v0.76.0",
+  "langchain-ai/langchain": "langchain-core==0.3.83",
+  "langchain-ai/langchainjs": "@langchain/google-webauth@2.1.10",
+  "huggingface/transformers": "v4.57.5",
+  "vercel/next.js": "v16.1.2",
+  "remix-run/remix": "component@0.2.1",
+  "withastro/astro": "astro@5.16.9",
+  "twilio/twilio-node": "5.11.2",
+  "sendgrid/sendgrid-nodejs": "8.1.6",
+  "supabase/supabase-js": "v2.90.1",
+  "mongodb/node-mongodb-native": "v7.0.0",
+  "planetscale/database-js": "v1.19.0",
+  "prisma/prisma": "7.2.0",
+  "drizzle-team/drizzle-orm": "0.45.1",
+  "vercel/vercel": "vercel@50.4.2",
+  "railwayapp/cli": "v4.25.1",
+  "wevm/wagmi": "@wagmi/core@3.2.2",
+  "wevm/viem": "viem@2.44.2",
+  "solana-labs/solana-web3.js": "v1.98.4",
+  "ethers-io/ethers.js": "v6.16.0",
+  "vitest-dev/vitest": "v4.0.17",
+  "microsoft/playwright": "v1.57.0"
 }

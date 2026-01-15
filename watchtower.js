@@ -2,10 +2,175 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-const REPOS = [
-  'openai/openai-python',
-  'stripe/stripe-node'
+// ============================================
+// DOCUMENTATION SOURCES TO MONITOR
+// ============================================
+// Each source has: name, GitHub repo, docs URL, and category
+
+const SOURCES = [
+  // --- AI / LLM ---
+  {
+    name: 'OpenAI Python',
+    repo: 'openai/openai-python',
+    docs: 'https://platform.openai.com/docs',
+    category: 'ai'
+  },
+  {
+    name: 'Anthropic Claude',
+    repo: 'anthropics/anthropic-sdk-python',
+    docs: 'https://docs.anthropic.com',
+    category: 'ai'
+  },
+  {
+    name: 'LangChain Python',
+    repo: 'langchain-ai/langchain',
+    docs: 'https://python.langchain.com/docs',
+    category: 'ai'
+  },
+  {
+    name: 'LangChain JS',
+    repo: 'langchain-ai/langchainjs',
+    docs: 'https://js.langchain.com/docs',
+    category: 'ai'
+  },
+  {
+    name: 'Hugging Face Transformers',
+    repo: 'huggingface/transformers',
+    docs: 'https://huggingface.co/docs/transformers',
+    category: 'ai'
+  },
+
+  // --- Payments / Fintech ---
+  {
+    name: 'Stripe Node',
+    repo: 'stripe/stripe-node',
+    docs: 'https://stripe.com/docs/api',
+    category: 'payments'
+  },
+
+  // --- Web Frameworks ---
+  {
+    name: 'Next.js',
+    repo: 'vercel/next.js',
+    docs: 'https://nextjs.org/docs',
+    category: 'framework'
+  },
+  {
+    name: 'Remix',
+    repo: 'remix-run/remix',
+    docs: 'https://remix.run/docs',
+    category: 'framework'
+  },
+  {
+    name: 'Astro',
+    repo: 'withastro/astro',
+    docs: 'https://docs.astro.build',
+    category: 'framework'
+  },
+
+  // --- Communication ---
+  {
+    name: 'Twilio Node',
+    repo: 'twilio/twilio-node',
+    docs: 'https://www.twilio.com/docs',
+    category: 'communication'
+  },
+  {
+    name: 'SendGrid Node',
+    repo: 'sendgrid/sendgrid-nodejs',
+    docs: 'https://docs.sendgrid.com',
+    category: 'communication'
+  },
+
+  // --- Backend / Database ---
+  {
+    name: 'Supabase JS',
+    repo: 'supabase/supabase-js',
+    docs: 'https://supabase.com/docs',
+    category: 'database'
+  },
+  {
+    name: 'MongoDB Node',
+    repo: 'mongodb/node-mongodb-native',
+    docs: 'https://www.mongodb.com/docs/drivers/node/current',
+    category: 'database'
+  },
+  {
+    name: 'PlanetScale Database JS',
+    repo: 'planetscale/database-js',
+    docs: 'https://planetscale.com/docs',
+    category: 'database'
+  },
+  {
+    name: 'Prisma',
+    repo: 'prisma/prisma',
+    docs: 'https://www.prisma.io/docs',
+    category: 'database'
+  },
+  {
+    name: 'Drizzle ORM',
+    repo: 'drizzle-team/drizzle-orm',
+    docs: 'https://orm.drizzle.team/docs',
+    category: 'database'
+  },
+
+  // --- Deployment / Infrastructure ---
+  {
+    name: 'Vercel CLI',
+    repo: 'vercel/vercel',
+    docs: 'https://vercel.com/docs',
+    category: 'infrastructure'
+  },
+  {
+    name: 'Railway CLI',
+    repo: 'railwayapp/cli',
+    docs: 'https://docs.railway.app',
+    category: 'infrastructure'
+  },
+
+  // --- Web3 / Blockchain ---
+  {
+    name: 'wagmi',
+    repo: 'wevm/wagmi',
+    docs: 'https://wagmi.sh',
+    category: 'web3'
+  },
+  {
+    name: 'viem',
+    repo: 'wevm/viem',
+    docs: 'https://viem.sh',
+    category: 'web3'
+  },
+  {
+    name: 'Solana Web3.js',
+    repo: 'solana-labs/solana-web3.js',
+    docs: 'https://solana-labs.github.io/solana-web3.js',
+    category: 'web3'
+  },
+  {
+    name: 'Ethers.js',
+    repo: 'ethers-io/ethers.js',
+    docs: 'https://docs.ethers.org',
+    category: 'web3'
+  },
+
+  // --- Testing / Dev Tools ---
+  {
+    name: 'Vitest',
+    repo: 'vitest-dev/vitest',
+    docs: 'https://vitest.dev',
+    category: 'testing'
+  },
+  {
+    name: 'Playwright',
+    repo: 'microsoft/playwright',
+    docs: 'https://playwright.dev/docs',
+    category: 'testing'
+  }
 ];
+
+// Legacy array for backwards compatibility
+const REPOS = SOURCES.map(s => s.repo);
 
 const DB_PATH = path.join(__dirname, 'version_db.json');
 
@@ -56,50 +221,82 @@ function saveDatabase(db) {
 }
 
 async function checkForUpdates() {
-  console.log('='.repeat(50));
-  console.log('WATCHTOWER - GitHub Release Monitor');
+  console.log('='.repeat(60));
+  console.log('WATCHTOWER - Documentation Release Monitor');
+  console.log(`Monitoring ${SOURCES.length} libraries across ${new Set(SOURCES.map(s => s.category)).size} categories`);
   console.log(`Checking at: ${new Date().toISOString()}`);
-  console.log('='.repeat(50));
+  console.log('='.repeat(60));
 
   const db = loadDatabase();
-  let hasUpdates = false;
+  const updates = [];
+  const errors = [];
+  const categoryCount = {};
 
-  for (const repo of REPOS) {
-    console.log(`\nChecking ${repo}...`);
+  for (const source of SOURCES) {
+    const { name, repo, docs, category } = source;
+    categoryCount[category] = (categoryCount[category] || 0) + 1;
+
+    process.stdout.write(`Checking ${name}...`);
     const latestVersion = await getLatestRelease(repo);
 
     if (!latestVersion) {
-      console.log(`  Could not fetch version for ${repo}`);
+      console.log(' [ERROR]');
+      errors.push(name);
       continue;
     }
 
     const storedVersion = db[repo];
 
     if (!storedVersion) {
-      console.log(`  First run - storing version: ${latestVersion}`);
+      console.log(` ${latestVersion} [NEW]`);
       db[repo] = latestVersion;
-      hasUpdates = true;
+      updates.push({ name, repo, oldVersion: null, newVersion: latestVersion, docs });
     } else if (storedVersion !== latestVersion) {
-      console.log(`  NEW PRODUCT ALERT for ${repo}!`);
-      console.log(`  Old version: ${storedVersion}`);
-      console.log(`  New version: ${latestVersion}`);
+      console.log(` ${storedVersion} -> ${latestVersion} [UPDATED]`);
+      updates.push({ name, repo, oldVersion: storedVersion, newVersion: latestVersion, docs });
       db[repo] = latestVersion;
-      hasUpdates = true;
     } else {
-      console.log(`  No updates (current: ${latestVersion})`);
+      console.log(` ${latestVersion} [OK]`);
     }
   }
 
   saveDatabase(db);
 
-  console.log('\n' + '='.repeat(50));
-  if (hasUpdates) {
-    console.log('Database updated with new versions.');
+  // Summary
+  console.log('\n' + '='.repeat(60));
+  console.log('SUMMARY');
+  console.log('='.repeat(60));
+
+  console.log('\nLibraries by category:');
+  Object.entries(categoryCount).forEach(([cat, count]) => {
+    console.log(`  ${cat}: ${count}`);
+  });
+
+  if (updates.length > 0) {
+    console.log(`\n${updates.length} UPDATE(S) DETECTED:`);
+    updates.forEach(u => {
+      if (u.oldVersion) {
+        console.log(`  - ${u.name}: ${u.oldVersion} -> ${u.newVersion}`);
+      } else {
+        console.log(`  - ${u.name}: ${u.newVersion} (first scan)`);
+      }
+      console.log(`    Docs: ${u.docs}`);
+    });
   } else {
-    console.log('No updates found. All versions are current.');
+    console.log('\nNo updates found. All versions are current.');
   }
-  console.log('='.repeat(50));
+
+  if (errors.length > 0) {
+    console.log(`\n${errors.length} ERROR(S):`);
+    errors.forEach(e => console.log(`  - ${e}`));
+  }
+
+  console.log('\n' + '='.repeat(60));
+  return { updates, errors };
 }
 
 // Run the check
 checkForUpdates();
+
+// Export for use in other modules
+module.exports = { SOURCES, checkForUpdates };
