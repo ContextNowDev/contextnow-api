@@ -1,13 +1,181 @@
+require('dotenv').config();
 const express = require('express');
+const { Connection, PublicKey } = require('@solana/web3.js');
+const { getAssociatedTokenAddress, TOKEN_PROGRAM_ID } = require('@solana/spl-token');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// ============================================
+// SOLANA & USDC CONFIGURATION
+// ============================================
+
+const SOLANA_RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
+const SOLANA_WALLET_ADDRESS = process.env.SOLANA_WALLET_ADDRESS || '';
+
+// USDC-SPL Token Configuration (Mainnet)
+const USDC_MINT = new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v');
+const USDC_DECIMALS = 6; // 1 USDC = 1,000,000 base units
+
+// Solana connection
+const solanaConnection = new Connection(SOLANA_RPC_URL, 'confirmed');
+
+// Store used transaction signatures to prevent replay attacks
+const usedTransactionSignatures = new Set();
+
+// ============================================
+// USDC PAYMENT VERIFICATION
+// ============================================
+
+async function getOurUSDCTokenAccount() {
+  if (!SOLANA_WALLET_ADDRESS) {
+    throw new Error('SOLANA_WALLET_ADDRESS not configured');
+  }
+  const walletPubkey = new PublicKey(SOLANA_WALLET_ADDRESS);
+  return await getAssociatedTokenAddress(USDC_MINT, walletPubkey);
+}
+
+async function verifyUSDCPayment(transactionSignature, expectedAmountUSDC) {
+  try {
+    // Check if transaction was already used (replay attack prevention)
+    if (usedTransactionSignatures.has(transactionSignature)) {
+      return {
+        valid: false,
+        code: 'REPLAY_ATTACK',
+        error: 'Transaction already used',
+        message: 'This transaction signature has already been used for a previous purchase. Each purchase requires a new USDC transaction.',
+        action: 'Send a new USDC payment and use the new transaction signature'
+      };
+    }
+
+    // Fetch the transaction
+    const transaction = await solanaConnection.getParsedTransaction(
+      transactionSignature,
+      { maxSupportedTransactionVersion: 0 }
+    );
+
+    if (!transaction) {
+      return {
+        valid: false,
+        code: 'TX_NOT_FOUND',
+        error: 'Transaction not found on Solana blockchain',
+        message: 'The transaction signature was not found. It may still be processing or the signature may be incorrect.',
+        action: 'Wait a few seconds for confirmation, then retry. If the issue persists, verify the transaction signature is correct.',
+        solscan_url: `https://solscan.io/tx/${transactionSignature}`
+      };
+    }
+
+    // Check if transaction is confirmed
+    if (!transaction.meta || transaction.meta.err) {
+      return {
+        valid: false,
+        code: 'TX_FAILED',
+        error: 'Transaction failed or not confirmed',
+        message: 'The transaction exists but failed or has not been confirmed yet.',
+        action: 'Check the transaction on Solscan. If it failed, send a new payment.',
+        solscan_url: `https://solscan.io/tx/${transactionSignature}`
+      };
+    }
+
+    // Get our USDC token account
+    const ourTokenAccount = await getOurUSDCTokenAccount();
+    const ourTokenAccountStr = ourTokenAccount.toBase58();
+
+    // Parse token transfer instructions
+    const instructions = transaction.transaction.message.instructions;
+    let validPaymentFound = false;
+    let receivedAmount = 0;
+
+    for (const instruction of instructions) {
+      // Check if it's a parsed instruction (SPL Token)
+      if (instruction.parsed && instruction.program === 'spl-token') {
+        const { type, info } = instruction.parsed;
+
+        // Look for transfer or transferChecked instructions
+        if (type === 'transfer' || type === 'transferChecked') {
+          const destination = info.destination;
+          const mint = info.mint;
+          const amount = info.amount || info.tokenAmount?.amount;
+
+          // Verify it's USDC going to our account
+          if (destination === ourTokenAccountStr) {
+            // For transferChecked, verify mint is USDC
+            if (type === 'transferChecked' && mint !== USDC_MINT.toBase58()) {
+              continue;
+            }
+            receivedAmount = parseInt(amount);
+            validPaymentFound = true;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!validPaymentFound) {
+      return {
+        valid: false,
+        code: 'WRONG_RECIPIENT',
+        error: 'Payment sent to wrong address',
+        message: 'No USDC transfer to our wallet was found in this transaction. You may have sent to the wrong address or sent SOL instead of USDC.',
+        action: 'Send USDC (not SOL) to the correct token account address',
+        correct_address: ourTokenAccountStr,
+        solscan_url: `https://solscan.io/tx/${transactionSignature}`
+      };
+    }
+
+    // Convert expected amount to base units
+    const expectedBaseUnits = Math.floor(expectedAmountUSDC * Math.pow(10, USDC_DECIMALS));
+
+    // Allow 1% tolerance for rounding
+    const tolerance = expectedBaseUnits * 0.01;
+    const minAmount = expectedBaseUnits - tolerance;
+
+    if (receivedAmount < minAmount) {
+      const receivedUSDC = receivedAmount / Math.pow(10, USDC_DECIMALS);
+      return {
+        valid: false,
+        code: 'INSUFFICIENT_AMOUNT',
+        error: `Insufficient amount (expected ${expectedAmountUSDC} USDC, received ${receivedUSDC} USDC)`,
+        message: `The payment amount is too low. You sent ${receivedUSDC} USDC but ${expectedAmountUSDC} USDC is required.`,
+        action: `Send an additional ${(expectedAmountUSDC - receivedUSDC).toFixed(6)} USDC to complete the purchase`,
+        expected: expectedAmountUSDC,
+        received: receivedUSDC,
+        shortfall: expectedAmountUSDC - receivedUSDC
+      };
+    }
+
+    // Mark transaction as used
+    usedTransactionSignatures.add(transactionSignature);
+
+    return {
+      valid: true,
+      amountReceived: receivedAmount / Math.pow(10, USDC_DECIMALS),
+      transactionSignature
+    };
+
+  } catch (error) {
+    console.error('Payment verification error:', error);
+    return {
+      valid: false,
+      code: 'VERIFICATION_ERROR',
+      error: `Verification failed: ${error.message}`,
+      message: 'An error occurred while verifying your payment. Please try again.',
+      action: 'Retry the request. If the issue persists, contact support.'
+    };
+  }
+}
+
+// ============================================
+// EXPRESS MIDDLEWARE
+// ============================================
 
 app.use((req, res, next) => {
   res.setHeader('X-Powered-By', 'ContextNow');
   res.setHeader('X-Service-Version', '1.0.0');
   next();
 });
+
+app.use(express.json());
 
 // Inventory - Premium API documentation content
 const INVENTORY = {
@@ -74,14 +242,29 @@ This bundle includes documentation for:
   }
 };
 
-// x402 Payment Required Middleware
-function x402Middleware(req, res, next) {
-  const authHeader = req.headers['authorization'];
+// x402 Payment Required Middleware (USDC-SPL on Solana)
+async function x402Middleware(req, res, next) {
+  // Check both headers and query params for payment proof
+  const paymentProof = req.headers['x-payment-proof'] ||
+                       req.headers['authorization'] ||
+                       req.query.payment_proof ||
+                       req.query.proof;
   const item = req.params.item;
   const inventoryItem = INVENTORY[item];
 
+  // DEBUG: Log incoming request details
+  console.log('\n[x402] === Payment Request ===');
+  console.log('[x402] Item:', item);
+  console.log('[x402] Headers:', JSON.stringify({
+    'x-payment-proof': req.headers['x-payment-proof'],
+    'authorization': req.headers['authorization']
+  }));
+  console.log('[x402] Query params:', JSON.stringify(req.query));
+  console.log('[x402] Payment proof received:', paymentProof ? `"${paymentProof.substring(0, 20)}..."` : 'NONE');
+
   // Item doesn't exist
   if (!inventoryItem) {
+    console.log('[x402] ERROR: Item not found');
     return res.status(404).json({
       error: 'Not Found',
       message: `Item '${item}' not found in inventory`,
@@ -90,32 +273,111 @@ function x402Middleware(req, res, next) {
   }
 
   // No payment proof provided - return 402 Payment Required
-  if (!authHeader) {
+  if (!paymentProof) {
+    console.log('[x402] BRANCH: No payment proof - returning payment instructions');
+    let usdcTokenAccount = null;
+    try {
+      if (SOLANA_WALLET_ADDRESS) {
+        usdcTokenAccount = (await getOurUSDCTokenAccount()).toBase58();
+      }
+    } catch (e) {
+      console.error('Error getting USDC token account:', e.message);
+    }
+
     return res.status(402).json({
       error: 'Payment Required',
-      message: 'This content requires micropayment to access',
+      message: 'This content requires USDC micropayment on Solana',
       pricing: {
         item: item,
         amount: inventoryItem.price,
-        currency: 'USD',
-        receiver_address: '0x742d35Cc6634C0532925a3b844Bc9e7595f8fE00',
-        payment_methods: ['ETH', 'USDC', 'Lightning'],
-        instructions: 'Include payment proof in Authorization header'
+        currency: 'USDC',
+        network: 'Solana (Mainnet)'
+      },
+      payment_instructions: {
+        step1: 'Get USDC on Solana (swap SOL for USDC on Jupiter, Raydium, or buy on exchange)',
+        step2: `Send exactly ${inventoryItem.price} USDC to our wallet`,
+        step3: 'Include the transaction signature in x-payment-proof header',
+        step4: 'Retry this request with the header'
+      },
+      payment_details: {
+        wallet_address: SOLANA_WALLET_ADDRESS || 'Not configured',
+        usdc_token_account: usdcTokenAccount || 'Not configured',
+        usdc_mint: USDC_MINT.toBase58(),
+        amount_usdc: inventoryItem.price,
+        amount_base_units: Math.floor(inventoryItem.price * Math.pow(10, USDC_DECIMALS))
+      },
+      example_header: 'x-payment-proof: <your-solana-transaction-signature>',
+      info_endpoint: '/payment-info'
+    });
+  }
+
+  // Development/testing bypass
+  if (paymentProof === 'valid_proof' && process.env.NODE_ENV !== 'production') {
+    console.log('[x402] BRANCH: Development bypass - valid_proof accepted');
+    return next();
+  }
+
+  // Verify USDC payment on Solana
+  console.log('[x402] BRANCH: Verifying USDC payment on Solana...');
+  console.log('[x402] Calling verifyUSDCPayment with:', {
+    signature: paymentProof.substring(0, 20) + '...',
+    expectedAmount: inventoryItem.price
+  });
+
+  const verification = await verifyUSDCPayment(paymentProof, inventoryItem.price);
+
+  console.log('[x402] Verification result:', JSON.stringify(verification, null, 2));
+
+  if (!verification.valid) {
+    console.log('[x402] BRANCH: Payment verification FAILED - code:', verification.code);
+    // Get USDC token account for retry info
+    let usdcTokenAccount = null;
+    try {
+      if (SOLANA_WALLET_ADDRESS) {
+        usdcTokenAccount = (await getOurUSDCTokenAccount()).toBase58();
+      }
+    } catch (e) {}
+
+    return res.status(402).json({
+      error: 'Payment Verification Failed',
+      code: verification.code,
+      reason: verification.error,
+      details: verification.message,
+      action_required: verification.action,
+
+      // Include any additional context from verification
+      ...(verification.solscan_url && { solscan_url: verification.solscan_url }),
+      ...(verification.correct_address && { correct_address: verification.correct_address }),
+      ...(verification.expected && {
+        amount_expected: verification.expected,
+        amount_received: verification.received,
+        amount_shortfall: verification.shortfall
+      }),
+
+      // Retry information
+      retry_info: {
+        item: item,
+        required_amount: inventoryItem.price,
+        currency: 'USDC',
+        payment_address: usdcTokenAccount || SOLANA_WALLET_ADDRESS || 'Not configured',
+        header_to_use: 'x-payment-proof',
+        header_value: '<your-new-transaction-signature>'
+      },
+
+      // Help links
+      resources: {
+        payment_info: '/payment-info',
+        get_usdc: 'https://jup.ag',
+        check_transaction: 'https://solscan.io'
       }
     });
   }
 
-  // Valid payment proof
-  if (authHeader === 'valid_proof') {
-    return next();
-  }
-
-  // Invalid payment proof
-  return res.status(403).json({
-    error: 'Forbidden',
-    message: 'Invalid payment proof provided',
-    hint: 'Ensure your payment transaction was confirmed'
-  });
+  // Payment verified - attach info to request and proceed
+  console.log('[x402] BRANCH: Payment verification SUCCESS!');
+  console.log('[x402] Amount received:', verification.amountReceived, 'USDC');
+  req.paymentInfo = verification;
+  next();
 }
 
 // Landing Page HTML
@@ -203,6 +465,12 @@ const LANDING_PAGE = `<!DOCTYPE html>
       font-size: 0.85rem;
       color: var(--cyan);
       margin-bottom: 24px;
+    }
+
+    .hero-logo {
+      font-size: 5rem;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 0 20px var(--cyan-glow));
     }
 
     .hero h1 {
@@ -494,6 +762,7 @@ const LANDING_PAGE = `<!DOCTYPE html>
   <section class="hero">
     <div class="container">
       <div class="hero-badge">HTTP 402 • Micropayments • AI-Native</div>
+      <div class="hero-logo">⚡</div>
       <h1>Fresh documentation for AI agents</h1>
       <p>Stop scraping outdated docs. Pay-per-request access to always-current API documentation, designed for autonomous AI agents.</p>
       <div class="hero-buttons">
@@ -1005,19 +1274,110 @@ app.get('/catalog', (req, res) => {
   res.send(generateCatalogPage());
 });
 
-app.get('/catalog/json', (req, res) => {
+app.get('/catalog/json', async (req, res) => {
   const catalog = Object.entries(INVENTORY).map(([key, value]) => ({
     id: key,
     price: value.price,
-    currency: 'USD',
+    currency: 'USDC',
     preview: value.content.substring(0, 100) + '...'
   }));
+
+  let usdcTokenAccount = null;
+  try {
+    if (SOLANA_WALLET_ADDRESS) {
+      usdcTokenAccount = (await getOurUSDCTokenAccount()).toBase58();
+    }
+  } catch (e) {}
 
   res.json({
     available_items: catalog,
     payment_info: {
-      receiver_address: '0x742d35Cc6634C0532925a3b844Bc9e7595f8fE00',
-      accepted_methods: ['ETH', 'USDC', 'Lightning']
+      network: 'Solana (Mainnet)',
+      currency: 'USDC-SPL',
+      wallet_address: SOLANA_WALLET_ADDRESS || 'Not configured',
+      usdc_token_account: usdcTokenAccount || 'Not configured',
+      usdc_mint: USDC_MINT.toBase58()
+    }
+  });
+});
+
+// Payment Information Endpoint
+app.get('/payment-info', async (req, res) => {
+  let usdcTokenAccount = null;
+  try {
+    if (SOLANA_WALLET_ADDRESS) {
+      usdcTokenAccount = (await getOurUSDCTokenAccount()).toBase58();
+    }
+  } catch (e) {
+    console.error('Error getting USDC token account:', e.message);
+  }
+
+  const items = Object.entries(INVENTORY).map(([id, item]) => ({
+    id,
+    price_usdc: item.price,
+    price_base_units: Math.floor(item.price * Math.pow(10, USDC_DECIMALS))
+  }));
+
+  res.json({
+    service: 'ContextNow',
+    payment_method: 'USDC-SPL on Solana',
+    network: 'Solana Mainnet',
+
+    wallet: {
+      address: SOLANA_WALLET_ADDRESS || 'Not configured - set SOLANA_WALLET_ADDRESS env var',
+      usdc_token_account: usdcTokenAccount || 'Not configured',
+      note: 'Send USDC to the usdc_token_account address'
+    },
+
+    usdc_token: {
+      mint: USDC_MINT.toBase58(),
+      decimals: USDC_DECIMALS,
+      name: 'USD Coin',
+      network: 'Solana SPL Token'
+    },
+
+    pricing: items,
+
+    instructions: {
+      step1: {
+        title: 'Get USDC on Solana',
+        options: [
+          'Swap SOL for USDC on Jupiter (jup.ag)',
+          'Swap on Raydium (raydium.io)',
+          'Buy USDC on an exchange and withdraw to Solana'
+        ]
+      },
+      step2: {
+        title: 'Send USDC Payment',
+        details: `Send the exact USDC amount to: ${usdcTokenAccount || 'Configure wallet first'}`,
+        important: 'Send USDC tokens, NOT SOL'
+      },
+      step3: {
+        title: 'Get Transaction Signature',
+        details: 'After sending, copy the transaction signature from your wallet or Solscan'
+      },
+      step4: {
+        title: 'Make API Request',
+        details: 'Include the signature in your request header',
+        example: {
+          endpoint: 'GET /buy/:item',
+          headers: {
+            'x-payment-proof': '<your-transaction-signature>'
+          }
+        }
+      }
+    },
+
+    verification: {
+      tolerance: '1% (to account for rounding)',
+      replay_protection: 'Each transaction signature can only be used once',
+      confirmation: 'Transaction must be confirmed on Solana'
+    },
+
+    links: {
+      jupiter_swap: 'https://jup.ag',
+      solscan: 'https://solscan.io',
+      usdc_info: 'https://www.circle.com/en/usdc'
     }
   });
 });
@@ -1030,22 +1390,43 @@ app.get('/buy/:item', x402Middleware, (req, res) => {
     success: true,
     item: item,
     charged: inventoryItem.price,
-    currency: 'USD',
+    currency: 'USDC',
+    payment: req.paymentInfo || { method: 'development_bypass' },
     content: inventoryItem.content,
     timestamp: new Date().toISOString()
   });
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log('='.repeat(50));
   console.log('🚀 CONTEXTNOW - Fresh Docs for AI Agents');
+  console.log('   💰 Powered by USDC on Solana');
   console.log('='.repeat(50));
   console.log(`Server running at http://localhost:${PORT}`);
-  console.log(`\nAvailable items: ${Object.keys(INVENTORY).join(', ')}`);
-  console.log('\nEndpoints:');
-  console.log('  GET /          - Service info');
-  console.log('  GET /catalog   - View available docs');
-  console.log('  GET /buy/:item - Purchase documentation');
+
+  // Show wallet configuration status
+  if (SOLANA_WALLET_ADDRESS) {
+    try {
+      const usdcAccount = await getOurUSDCTokenAccount();
+      console.log(`\n💳 USDC Payments Enabled`);
+      console.log(`   Wallet: ${SOLANA_WALLET_ADDRESS.slice(0, 8)}...${SOLANA_WALLET_ADDRESS.slice(-8)}`);
+      console.log(`   USDC Account: ${usdcAccount.toBase58().slice(0, 8)}...`);
+    } catch (e) {
+      console.log(`\n⚠️  Wallet configured but USDC account error: ${e.message}`);
+    }
+  } else {
+    console.log('\n⚠️  No SOLANA_WALLET_ADDRESS configured');
+    console.log('   Set it in .env to accept real payments');
+    console.log('   Using "valid_proof" bypass for development');
+  }
+
+  console.log(`\n📦 Available items: ${Object.keys(INVENTORY).join(', ')}`);
+  console.log('\n🔗 Endpoints:');
+  console.log('   GET /             - Landing page');
+  console.log('   GET /catalog      - Browse documentation');
+  console.log('   GET /catalog/json - API catalog');
+  console.log('   GET /payment-info - USDC payment instructions');
+  console.log('   GET /buy/:item    - Purchase (requires USDC payment)');
   console.log('='.repeat(50));
 });
