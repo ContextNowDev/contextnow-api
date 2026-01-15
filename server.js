@@ -498,7 +498,8 @@ async function x402Middleware(req, res, next) {
         amount_base_units: Math.floor(inventoryItem.price * Math.pow(10, USDC_DECIMALS))
       },
       example_header: 'x-payment-proof: <your-solana-transaction-signature>',
-      info_endpoint: '/payment-info'
+      info_endpoint: '/payment-info',
+      support: 'support@contextnow.dev'
     });
   }
 
@@ -560,7 +561,8 @@ async function x402Middleware(req, res, next) {
         payment_info: '/payment-info',
         get_usdc: 'https://jup.ag',
         check_transaction: 'https://solscan.io'
-      }
+      },
+      support: 'support@contextnow.dev'
     });
   }
 
@@ -1165,8 +1167,10 @@ curl https://contextnow.dev/buy/stripe-2026 \\
         <a href="/payment-info">Payment API</a>
         <a href="https://solscan.io" target="_blank">Solscan</a>
         <a href="https://jup.ag" target="_blank">Get USDC</a>
+        <a href="mailto:support@contextnow.dev">Contact</a>
       </div>
       <p class="copyright">© 2026 ContextNow. Powered by USDC on Solana.</p>
+      <p class="copyright" style="margin-top: 8px;">Questions? <a href="mailto:support@contextnow.dev" style="color: var(--cyan);">support@contextnow.dev</a></p>
     </div>
   </footer>
 </body>
@@ -1610,6 +1614,7 @@ function generateCatalogPage() {
   <footer>
     <div class="container">
       <p class="copyright">© 2026 ContextNow. Pay for what you use.</p>
+      <p class="copyright" style="margin-top: 8px;">Need help? <a href="mailto:support@contextnow.dev" style="color: var(--blue);">support@contextnow.dev</a></p>
     </div>
   </footer>
 </body>
@@ -1733,6 +1738,11 @@ app.get('/payment-info', async (req, res) => {
       jupiter_swap: 'https://jup.ag',
       solscan: 'https://solscan.io',
       usdc_info: 'https://www.circle.com/en/usdc'
+    },
+
+    support: {
+      email: 'support@contextnow.dev',
+      message: 'Having issues? Contact us for help with payments or integration.'
     }
   });
 });
