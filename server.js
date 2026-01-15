@@ -625,7 +625,387 @@ app.get('/', (req, res) => {
   res.send(LANDING_PAGE);
 });
 
+// Catalog Page HTML Generator
+function generateCatalogPage() {
+  const productData = {
+    'stripe-2026': {
+      name: 'Stripe API 2026',
+      description: 'Complete Stripe SDK documentation with Payment Intents, neural verification, and quantum-resistant encryption.',
+      icon: '💳',
+      features: ['Payment Intents API', 'Webhooks & Events', 'Fraud Detection v3']
+    },
+    'openai-2026': {
+      name: 'OpenAI SDK 2026',
+      description: 'Python SDK documentation for GPT-5, multimodal input, and 1M token context windows.',
+      icon: '🤖',
+      features: ['Chat Completions', 'Embeddings API', 'Function Calling']
+    },
+    'combined-bundle': {
+      name: 'Premium Bundle',
+      description: 'Everything included: Stripe + OpenAI docs with integration patterns and best practices.',
+      icon: '📦',
+      features: ['All Documentation', 'Integration Patterns', 'Best Practices']
+    }
+  };
+
+  const cards = Object.entries(INVENTORY).map(([id, item]) => {
+    const meta = productData[id];
+    const isBundle = id === 'combined-bundle';
+    return `
+      <div class="product-card${isBundle ? ' featured' : ''}">
+        ${isBundle ? '<div class="featured-badge">BEST VALUE</div>' : ''}
+        <div class="product-icon">${meta.icon}</div>
+        <h3>${meta.name}</h3>
+        <p class="product-description">${meta.description}</p>
+        <div class="product-price">
+          <span class="price-amount">$${item.price}</span>
+          <span class="price-unit">per request</span>
+        </div>
+        <ul class="product-features">
+          ${meta.features.map(f => `<li>${f}</li>`).join('')}
+        </ul>
+        <a href="/buy/${id}" class="btn btn-purchase">Purchase Documentation</a>
+      </div>
+    `;
+  }).join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalog - ContextNow</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-primary: #0F172A;
+      --bg-secondary: #1E293B;
+      --bg-card: #334155;
+      --blue: #00D9FF;
+      --blue-dim: #00b8d9;
+      --blue-glow: rgba(0, 217, 255, 0.3);
+      --indigo: #6366F1;
+      --indigo-dim: #4F46E5;
+      --text-primary: #F8FAFC;
+      --text-secondary: #CBD5E1;
+      --text-dim: #64748B;
+      --border: #475569;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    nav {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--blue);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo span { color: var(--text-primary); }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .page-header {
+      padding: 60px 0 40px;
+      text-align: center;
+      background: radial-gradient(ellipse at top, rgba(99, 102, 241, 0.15) 0%, transparent 60%);
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .products-section {
+      padding: 40px 0 80px;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .products-grid { grid-template-columns: 1fr; }
+    }
+
+    .product-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      position: relative;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--blue);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 40px var(--blue-glow);
+    }
+
+    .product-card.featured {
+      border-color: var(--indigo);
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(99, 102, 241, 0.1) 100%);
+    }
+
+    .product-card.featured:hover {
+      border-color: var(--indigo);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 40px rgba(99, 102, 241, 0.3);
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-dim) 100%);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .product-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .product-card h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .product-description {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+      flex-grow: 1;
+    }
+
+    .product-price {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 24px;
+      padding: 16px;
+      background: var(--bg-primary);
+      border-radius: 12px;
+    }
+
+    .price-amount {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--blue);
+    }
+
+    .price-unit {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    .product-features {
+      list-style: none;
+      margin-bottom: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .product-features li {
+      padding: 8px 0;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+
+    .product-features li::before {
+      content: '✓';
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .product-card.featured .product-features li::before {
+      color: var(--indigo);
+    }
+
+    .btn-purchase {
+      display: block;
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dim) 100%);
+      color: var(--bg-primary);
+      text-decoration: none;
+      text-align: center;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .btn-purchase:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px var(--blue-glow);
+    }
+
+    .product-card.featured .btn-purchase {
+      background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-dim) 100%);
+    }
+
+    .product-card.featured .btn-purchase:hover {
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .api-notice {
+      text-align: center;
+      padding: 24px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      margin-top: 40px;
+      border: 1px solid var(--border);
+    }
+
+    .api-notice p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .api-notice a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .api-notice a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      padding: 30px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .copyright {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="container">
+      <a href="/" class="logo">⚡ Context<span>Now</span></a>
+      <a href="/" class="back-link">← Back to Home</a>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <h1>Documentation Catalog</h1>
+      <p>Premium API documentation for AI agents. Pay only for what you need with HTTP 402 micropayments.</p>
+    </div>
+  </header>
+
+  <section class="products-section">
+    <div class="container">
+      <div class="products-grid">
+        ${cards}
+      </div>
+      <div class="api-notice">
+        <p>Building an AI agent? Use our <a href="/catalog/json">JSON API endpoint</a> for programmatic access.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p class="copyright">© 2026 ContextNow. Pay for what you use.</p>
+    </div>
+  </footer>
+</body>
+</html>`;
+}
+
 app.get('/catalog', (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.send(generateCatalogPage());
+});
+
+app.get('/catalog/json', (req, res) => {
   const catalog = Object.entries(INVENTORY).map(([key, value]) => ({
     id: key,
     price: value.price,
