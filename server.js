@@ -581,27 +581,113 @@ const LANDING_PAGE = `<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ContextNow - Fresh Documentation for AI Agents</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg-primary: #0a0e17;
-      --bg-secondary: #111827;
-      --bg-card: #1a2332;
-      --cyan: #06b6d4;
-      --cyan-dim: #0891b2;
-      --cyan-glow: rgba(6, 182, 212, 0.3);
-      --text-primary: #f1f5f9;
-      --text-secondary: #94a3b8;
-      --text-dim: #64748b;
-      --border: #1e293b;
+      --bg-void: #030305;
+      --bg-primary: #08080c;
+      --bg-elevated: #0d0d12;
+      --bg-card: #111118;
+      --bg-card-hover: #16161f;
+      --cyan: #00F0FF;
+      --cyan-dim: #00c4d4;
+      --cyan-glow: rgba(0, 240, 255, 0.4);
+      --magenta: #FF00FF;
+      --magenta-dim: #cc00cc;
+      --magenta-glow: rgba(255, 0, 255, 0.3);
+      --amber: #FFB800;
+      --text-primary: #f0f0f5;
+      --text-secondary: #8888a0;
+      --text-dim: #55556a;
+      --border: #1a1a24;
+      --border-glow: #2a2a3a;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      92% { opacity: 1; }
+      93% { opacity: 0.8; }
+      94% { opacity: 1; }
+      96% { opacity: 0.9; }
+      97% { opacity: 1; }
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px var(--cyan-glow), inset 0 0 20px rgba(0, 240, 255, 0.05); }
+      50% { box-shadow: 0 0 40px var(--cyan-glow), inset 0 0 30px rgba(0, 240, 255, 0.1); }
+    }
+
+    @keyframes scan {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100vh); }
+    }
+
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      background: var(--bg-primary);
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-void);
       color: var(--text-primary);
-      line-height: 1.6;
+      line-height: 1.7;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Scanline overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* Grid background */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: -1;
     }
 
     .container {
@@ -614,6 +700,11 @@ const LANDING_PAGE = `<!DOCTYPE html>
     nav {
       padding: 20px 0;
       border-bottom: 1px solid var(--border);
+      background: rgba(8, 8, 12, 0.9);
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
 
     nav .container {
@@ -623,441 +714,830 @@ const LANDING_PAGE = `<!DOCTYPE html>
     }
 
     .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
       color: var(--cyan);
       text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-shadow: 0 0 20px var(--cyan-glow);
+      animation: flicker 4s infinite;
     }
 
-    .logo span { color: var(--text-primary); }
+    .logo-icon {
+      font-size: 1.8rem;
+      filter: drop-shadow(0 0 10px var(--cyan));
+    }
 
-    .nav-links { display: flex; gap: 24px; }
+    .logo span { color: var(--text-primary); text-shadow: none; }
+
+    .nav-links { display: flex; gap: 32px; }
 
     .nav-links a {
-      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-dim);
       text-decoration: none;
-      font-size: 0.95rem;
-      transition: color 0.2s;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: all 0.3s;
+      position: relative;
     }
 
-    .nav-links a:hover { color: var(--cyan); }
+    .nav-links a::before {
+      content: '>';
+      margin-right: 6px;
+      color: var(--cyan);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--cyan);
+      text-shadow: 0 0 10px var(--cyan-glow);
+    }
+
+    .nav-links a:hover::before { opacity: 1; }
 
     /* Hero Section */
     .hero {
-      padding: 100px 0 80px;
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      padding: 80px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(0, 240, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(255, 0, 255, 0.05) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
       text-align: center;
-      background: radial-gradient(ellipse at top, rgba(6, 182, 212, 0.1) 0%, transparent 60%);
+      width: 100%;
     }
 
     .hero-badge {
-      display: inline-block;
-      padding: 6px 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 24px;
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 50px;
-      font-size: 0.85rem;
-      color: var(--cyan);
-      margin-bottom: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-bottom: 40px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--cyan);
+      animation: blink 1s infinite;
     }
 
     .hero-logo {
-      font-size: 5rem;
-      margin-bottom: 16px;
-      filter: drop-shadow(0 0 20px var(--cyan-glow));
+      font-size: 8rem;
+      margin-bottom: 32px;
+      filter: drop-shadow(0 0 60px var(--cyan-glow));
+      animation: float 3s ease-in-out infinite, fadeInUp 0.8s ease-out 0.1s backwards;
     }
 
     .hero h1 {
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      font-weight: 700;
-      margin-bottom: 20px;
-      background: linear-gradient(135deg, var(--text-primary) 0%, var(--cyan) 100%);
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+      animation: fadeInUp 0.8s ease-out 0.2s backwards;
+    }
+
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--magenta) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
-    .hero p {
+    .hero-subtitle {
       font-size: 1.25rem;
       color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto 40px;
+      max-width: 650px;
+      margin: 0 auto 48px;
+      font-weight: 300;
+      animation: fadeInUp 0.8s ease-out 0.3s backwards;
     }
 
-    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .hero-subtitle strong {
+      color: var(--cyan);
+      font-weight: 500;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.8s ease-out 0.4s backwards;
+    }
 
     .btn {
-      padding: 14px 32px;
-      border-radius: 8px;
-      font-size: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 16px 36px;
+      font-size: 0.85rem;
       font-weight: 600;
       text-decoration: none;
-      transition: all 0.2s;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
     }
 
     .btn-primary {
       background: var(--cyan);
-      color: var(--bg-primary);
+      color: var(--bg-void);
+      border: none;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
     }
 
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-primary:hover::before { left: 100%; }
+
     .btn-primary:hover {
-      background: var(--cyan-dim);
-      box-shadow: 0 0 30px var(--cyan-glow);
+      box-shadow: 0 0 40px var(--cyan-glow), 0 0 80px rgba(0, 240, 255, 0.2);
+      transform: translateY(-2px);
     }
 
     .btn-secondary {
-      background: var(--bg-card);
+      background: transparent;
       color: var(--text-primary);
       border: 1px solid var(--border);
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
     }
 
-    .btn-secondary:hover { border-color: var(--cyan); }
+    .btn-secondary:hover {
+      border-color: var(--magenta);
+      color: var(--magenta);
+      box-shadow: 0 0 30px var(--magenta-glow);
+    }
 
-    /* How It Works */
-    .how-it-works {
-      padding: 80px 0;
-      background: var(--bg-secondary);
+    /* ASCII Decorations */
+    .ascii-border {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--border);
+      font-size: 0.7rem;
+      white-space: pre;
+      text-align: center;
+      margin: 60px 0;
+      opacity: 0.5;
+    }
+
+    /* Protocol Section */
+    .protocol {
+      padding: 100px 0;
+      background: var(--bg-primary);
+      position: relative;
+    }
+
+    .protocol::before {
+      content: 'PROTOCOL_SEQUENCE';
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.3em;
+      opacity: 0.5;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+
+    .section-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--cyan);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: block;
     }
 
     .section-title {
-      text-align: center;
-      font-size: 2rem;
-      margin-bottom: 20px;
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
     }
 
     .section-subtitle {
-      text-align: center;
       color: var(--text-secondary);
       font-size: 1.1rem;
-      margin-bottom: 50px;
-    }
-
-    .how-it-works .section-title,
-    .api-examples .section-title,
-    .why-solana .section-title {
-      margin-bottom: 60px;
+      font-weight: 300;
     }
 
     .steps {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 32px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    @media (max-width: 900px) {
+      .steps { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 500px) {
+      .steps { grid-template-columns: 1fr; }
     }
 
     .step {
       background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 32px;
-      text-align: center;
-      transition: border-color 0.2s;
+      padding: 48px 32px;
+      position: relative;
+      transition: all 0.4s;
     }
 
-    .step:hover { border-color: var(--cyan); }
+    .step:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .step:hover .step-number {
+      color: var(--bg-void);
+      background: var(--cyan);
+      box-shadow: 0 0 30px var(--cyan-glow);
+    }
 
     .step-number {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, var(--cyan), var(--cyan-dim));
-      border-radius: 50%;
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--cyan);
+      background: var(--bg-elevated);
+      width: 60px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
-      font-size: 1.25rem;
-      margin: 0 auto 20px;
-      color: var(--bg-primary);
+      margin-bottom: 24px;
+      transition: all 0.4s;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
     }
 
     .step h3 {
-      font-size: 1.25rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
       margin-bottom: 12px;
     }
 
-    .step p { color: var(--text-secondary); }
-
-    /* API Examples */
-    .api-examples {
-      padding: 80px 0;
+    .step p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 300;
     }
 
-    .code-blocks {
+    /* Terminal Section */
+    .terminal-section {
+      padding: 100px 0;
+      position: relative;
+    }
+
+    .terminal-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 24px;
     }
 
-    @media (max-width: 500px) {
-      .code-blocks { grid-template-columns: 1fr; }
+    @media (max-width: 800px) {
+      .terminal-grid { grid-template-columns: 1fr; }
     }
 
-    .code-block {
+    .terminal {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 12px;
       overflow: hidden;
+      position: relative;
     }
 
-    .code-header {
-      padding: 12px 20px;
-      background: var(--bg-secondary);
+    .terminal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .terminal:hover::before { opacity: 1; }
+
+    .terminal-header {
+      padding: 16px 20px;
+      background: var(--bg-elevated);
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .code-title {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
+    .terminal-dots {
+      display: flex;
+      gap: 8px;
     }
 
-    .code-badge {
-      padding: 4px 10px;
-      background: var(--bg-primary);
-      border-radius: 4px;
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .terminal-dot.red { background: #ff5f57; }
+    .terminal-dot.yellow { background: #febc2e; }
+    .terminal-dot.green { background: #28c840; }
+
+    .terminal-title {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 0.75rem;
-      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
     }
 
-    .code-badge.error { color: #f87171; }
-    .code-badge.success { color: #4ade80; }
+    .terminal-badge {
+      font-family: 'JetBrains Mono', monospace;
+      padding: 4px 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
 
-    pre {
-      padding: 20px;
+    .terminal-badge.error {
+      background: rgba(248, 113, 113, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+
+    .terminal-badge.success {
+      background: rgba(74, 222, 128, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+
+    .terminal-body {
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.8;
       overflow-x: auto;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-      font-size: 0.9rem;
-      line-height: 1.5;
+    }
+
+    .terminal-body pre {
+      margin: 0;
+      font-family: inherit;
     }
 
     .comment { color: var(--text-dim); }
-    .keyword { color: #c084fc; }
+    .keyword { color: var(--magenta); }
     .string { color: #4ade80; }
-    .number { color: #fb923c; }
+    .number { color: var(--amber); }
     .property { color: var(--cyan); }
+    .prompt { color: var(--magenta); }
 
-    /* Pricing */
+    /* Pricing Matrix */
     .pricing {
-      padding: 80px 0;
-      background: var(--bg-secondary);
+      padding: 100px 0;
+      background: var(--bg-primary);
+      position: relative;
+    }
+
+    .pricing::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
     }
 
     .pricing-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .pricing-grid { grid-template-columns: 1fr; }
     }
 
     .price-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 32px;
-      transition: all 0.2s;
+      padding: 40px;
+      position: relative;
+      transition: all 0.4s;
+      clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
     }
 
     .price-card:hover {
       border-color: var(--cyan);
-      transform: translateY(-4px);
+      transform: translateY(-8px);
     }
 
     .price-card.featured {
-      border-color: var(--cyan);
-      position: relative;
+      border-color: var(--magenta);
+      background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255, 0, 255, 0.05) 100%);
+    }
+
+    .price-card.featured:hover {
+      border-color: var(--magenta);
+      box-shadow: 0 0 60px var(--magenta-glow);
     }
 
     .price-card.featured::before {
-      content: 'POPULAR';
+      content: 'RECOMMENDED';
       position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--cyan);
-      color: var(--bg-primary);
-      padding: 4px 12px;
-      border-radius: 4px;
-      font-size: 0.75rem;
+      top: -1px;
+      left: 40px;
+      background: var(--magenta);
+      color: var(--bg-void);
+      padding: 6px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
       font-weight: 700;
+      letter-spacing: 0.1em;
     }
 
     .price-card h3 {
-      font-size: 1.25rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
       margin-bottom: 8px;
     }
 
     .price-card .description {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin-bottom: 20px;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      margin-bottom: 24px;
+      font-weight: 300;
     }
 
     .price {
-      font-size: 2.5rem;
-      font-weight: 700;
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
       color: var(--cyan);
+      line-height: 1;
+      margin-bottom: 8px;
     }
 
-    .price span {
-      font-size: 1rem;
-      color: var(--text-secondary);
-      font-weight: 400;
+    .price-card.featured .price { color: var(--magenta); }
+
+    .price-unit {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
     }
 
     .price-features {
-      margin-top: 24px;
-      padding-top: 24px;
+      margin-top: 32px;
+      padding-top: 32px;
       border-top: 1px solid var(--border);
     }
 
     .price-features li {
       list-style: none;
-      padding: 8px 0;
+      padding: 10px 0;
       color: var(--text-secondary);
+      font-size: 0.9rem;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .price-features li::before {
-      content: '✓';
+      content: '//';
+      font-family: 'JetBrains Mono', monospace;
       color: var(--cyan);
-      font-weight: 700;
+      font-size: 0.8rem;
     }
 
-    /* Why Solana Section */
-    .why-solana {
-      padding: 80px 0;
+    .price-card.featured .price-features li::before { color: var(--magenta); }
+
+    /* Benefits Grid */
+    .benefits {
+      padding: 100px 0;
     }
 
     .benefits-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 32px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    @media (max-width: 900px) {
+      .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 500px) {
+      .benefits-grid { grid-template-columns: 1fr; }
     }
 
     .benefit {
-      text-align: center;
-      padding: 32px 24px;
       background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      transition: all 0.2s;
+      padding: 48px 32px;
+      text-align: center;
+      position: relative;
+      transition: all 0.4s;
     }
 
     .benefit:hover {
-      border-color: var(--cyan);
-      transform: translateY(-4px);
+      background: var(--bg-card-hover);
+    }
+
+    .benefit:hover .benefit-icon {
+      transform: scale(1.1);
+      text-shadow: 0 0 40px var(--cyan-glow);
     }
 
     .benefit-icon {
-      font-size: 2.5rem;
-      margin-bottom: 16px;
+      font-size: 3rem;
+      margin-bottom: 20px;
+      display: block;
+      transition: all 0.4s;
     }
 
     .benefit h3 {
-      font-size: 1.25rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
       margin-bottom: 12px;
       color: var(--cyan);
     }
 
     .benefit p {
       color: var(--text-secondary);
-      font-size: 0.95rem;
+      font-size: 0.85rem;
+      font-weight: 300;
     }
 
     /* Footer */
     footer {
-      padding: 40px 0;
+      padding: 60px 0 40px;
       border-top: 1px solid var(--border);
-      text-align: center;
+      background: var(--bg-primary);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 48px;
+    }
+
+    @media (max-width: 700px) {
+      .footer-content {
+        flex-direction: column;
+        gap: 32px;
+      }
+    }
+
+    .footer-brand {
+      max-width: 300px;
+    }
+
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--cyan);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .footer-logo span { color: var(--text-primary); }
+
+    .footer-tagline {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      font-weight: 300;
     }
 
     .footer-links {
       display: flex;
-      justify-content: center;
-      gap: 32px;
-      margin-bottom: 20px;
+      gap: 48px;
     }
 
-    .footer-links a {
+    @media (max-width: 500px) {
+      .footer-links {
+        flex-direction: column;
+        gap: 24px;
+      }
+    }
+
+    .footer-column h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .footer-column a {
+      display: block;
       color: var(--text-secondary);
       text-decoration: none;
-      transition: color 0.2s;
+      font-size: 0.9rem;
+      padding: 6px 0;
+      transition: all 0.3s;
     }
 
-    .footer-links a:hover { color: var(--cyan); }
+    .footer-column a:hover {
+      color: var(--cyan);
+      padding-left: 8px;
+    }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 500px) {
+      .footer-bottom {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+    }
 
     .copyright {
+      font-family: 'JetBrains Mono', monospace;
       color: var(--text-dim);
-      font-size: 0.9rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #4ade80;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
     }
   </style>
 </head>
 <body>
   <nav>
     <div class="container">
-      <a href="/" class="logo">⚡ Context<span>Now</span></a>
+      <a href="/" class="logo">
+        <span class="logo-icon">⚡</span>
+        Context<span>Now</span>
+      </a>
       <div class="nav-links">
-        <a href="#how-it-works">How It Works</a>
+        <a href="#protocol">Protocol</a>
         <a href="#pricing">Pricing</a>
-        <a href="#why-solana">Why Solana</a>
+        <a href="#network">Network</a>
         <a href="/payment-info">API</a>
       </div>
     </div>
   </nav>
 
   <section class="hero">
-    <div class="container">
-      <div class="hero-badge">HTTP 402 • USDC on Solana • Real Micropayments</div>
-      <div class="hero-logo">⚡</div>
-      <h1>Fresh documentation for AI agents</h1>
-      <p>Stop scraping outdated docs. Pay $0.001-$0.005 USDC on Solana for instant access to always-current API documentation.</p>
-      <div class="hero-buttons">
-        <a href="/catalog" class="btn btn-primary">View Catalog</a>
-        <a href="https://github.com/contextnow/contextnow-api" class="btn btn-secondary" target="_blank">GitHub →</a>
+    <div class="hero-content">
+      <div class="container">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          HTTP 402 • USDC on Solana • Live on Mainnet
+        </div>
+        <div class="hero-logo">⚡</div>
+        <h1>Fresh docs for<br><span class="gradient">AI agents</span></h1>
+        <p class="hero-subtitle">Stop scraping outdated documentation. Pay <strong>$0.001 USDC</strong> on Solana for instant access to always-current API docs. Transaction confirms in <strong>~400ms</strong>.</p>
+        <div class="hero-buttons">
+          <a href="/catalog" class="btn btn-primary">Access Catalog</a>
+          <a href="https://github.com/contextnow/contextnow-api" class="btn btn-secondary" target="_blank">View Source</a>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="how-it-works" id="how-it-works">
+  <div class="ascii-border">
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  TRANSMISSION PROTOCOL v1.0.0  //  SECURE CHANNEL ESTABLISHED  //  READY    │
+└──────────────────────────────────────────────────────────────────────────────┘
+  </div>
+
+  <section class="protocol" id="protocol">
     <div class="container">
-      <h2 class="section-title">How It Works</h2>
+      <div class="section-header">
+        <span class="section-tag">// How it works</span>
+        <h2 class="section-title">Four-step protocol</h2>
+        <p class="section-subtitle">Seamless micropayments for AI agents</p>
+      </div>
       <div class="steps">
         <div class="step">
-          <div class="step-number">1</div>
+          <div class="step-number">01</div>
           <h3>Request Documentation</h3>
-          <p>Your AI agent makes a GET request to /buy/:item for the documentation it needs.</p>
+          <p>Your AI agent sends a GET request to /buy/:item for the documentation it needs.</p>
         </div>
         <div class="step">
-          <div class="step-number">2</div>
-          <h3>Receive 402 + USDC Details</h3>
-          <p>We return USDC amount, Solana wallet address, and payment instructions.</p>
+          <div class="step-number">02</div>
+          <h3>Receive 402 Response</h3>
+          <p>Server returns USDC amount, Solana wallet address, and payment instructions.</p>
         </div>
         <div class="step">
-          <div class="step-number">3</div>
-          <h3>Send 0.001-0.005 USDC</h3>
-          <p>Send USDC on Solana (~$0.00025 fee). Transaction confirms in ~400ms.</p>
+          <div class="step-number">03</div>
+          <h3>Send USDC Payment</h3>
+          <p>Send USDC on Solana with ~$0.00025 fee. Transaction confirms in ~400ms.</p>
         </div>
         <div class="step">
-          <div class="step-number">4</div>
-          <h3>Get Instant Access</h3>
+          <div class="step-number">04</div>
+          <h3>Receive Content</h3>
           <p>Include transaction signature in header, receive fresh documentation instantly.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="api-examples" id="api">
+  <section class="terminal-section" id="api">
     <div class="container">
-      <h2 class="section-title">Live API Examples</h2>
-      <div class="code-blocks">
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-title">Request without payment</span>
-            <span class="code-badge error">402</span>
+      <div class="section-header">
+        <span class="section-tag">// Live examples</span>
+        <h2 class="section-title">API in action</h2>
+        <p class="section-subtitle">Real requests, real responses</p>
+      </div>
+      <div class="terminal-grid">
+        <div class="terminal">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="terminal-dot red"></span>
+              <span class="terminal-dot yellow"></span>
+              <span class="terminal-dot green"></span>
+            </div>
+            <span class="terminal-title">request.sh</span>
+            <span class="terminal-badge error">402</span>
           </div>
-          <pre><span class="comment"># No payment = 402 with instructions</span>
-curl https://contextnow.dev/buy/stripe-2026
+          <div class="terminal-body">
+<pre><span class="comment"># No payment = 402 with instructions</span>
+<span class="prompt">$</span> curl https://contextnow.dev/buy/stripe-node
 
 <span class="comment"># Response:</span>
 {
@@ -1068,17 +1548,24 @@ curl https://contextnow.dev/buy/stripe-2026
     <span class="property">"network"</span>: <span class="string">"Solana (Mainnet)"</span>
   },
   <span class="property">"payment_details"</span>: {
-    <span class="property">"usdc_token_account"</span>: <span class="string">"GbNZA3pV..."</span>
+    <span class="property">"usdc_token_account"</span>: <span class="string">"GbNZA3..."</span>
   }
 }</pre>
-        </div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-title">Request with Solana tx signature</span>
-            <span class="code-badge success">200</span>
           </div>
-          <pre><span class="comment"># Include your Solana tx signature</span>
-curl https://contextnow.dev/buy/stripe-2026 \\
+        </div>
+        <div class="terminal">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="terminal-dot red"></span>
+              <span class="terminal-dot yellow"></span>
+              <span class="terminal-dot green"></span>
+            </div>
+            <span class="terminal-title">request.sh</span>
+            <span class="terminal-badge success">200</span>
+          </div>
+          <div class="terminal-body">
+<pre><span class="comment"># Include Solana tx signature</span>
+<span class="prompt">$</span> curl https://contextnow.dev/buy/stripe-node \\
   -H <span class="string">"x-payment-proof: 5UfD4v..."</span>
 
 <span class="comment"># Response:</span>
@@ -1088,6 +1575,7 @@ curl https://contextnow.dev/buy/stripe-2026 \\
   <span class="property">"charged"</span>: <span class="number">0.001</span>,
   <span class="property">"currency"</span>: <span class="string">"USDC"</span>
 }</pre>
+          </div>
         </div>
       </div>
     </div>
@@ -1095,66 +1583,76 @@ curl https://contextnow.dev/buy/stripe-2026 \\
 
   <section class="pricing" id="pricing">
     <div class="container">
-      <h2 class="section-title">Documentation Catalog</h2>
-      <p class="section-subtitle">Real USDC micropayments on Solana Mainnet. Not a demo.</p>
+      <div class="section-header">
+        <span class="section-tag">// Pricing matrix</span>
+        <h2 class="section-title">Documentation packages</h2>
+        <p class="section-subtitle">Real USDC micropayments on Solana Mainnet</p>
+      </div>
       <div class="pricing-grid">
         <div class="price-card">
-          <h3>Stripe API 2026</h3>
-          <p class="description">Complete Stripe SDK documentation with latest features</p>
-          <div class="price">0.001 <span>USDC</span></div>
+          <h3>Stripe API</h3>
+          <p class="description">Complete SDK documentation with latest features</p>
+          <div class="price">0.001</div>
+          <div class="price-unit">USDC</div>
           <ul class="price-features">
             <li>Payment Intents API</li>
-            <li>Neural verification docs</li>
-            <li>Quantum encryption guide</li>
+            <li>Webhook handling</li>
+            <li>Error reference</li>
           </ul>
         </div>
         <div class="price-card featured">
-          <h3>OpenAI SDK 2026</h3>
-          <p class="description">Python SDK documentation for GPT-5 and beyond</p>
-          <div class="price">0.002 <span>USDC</span></div>
+          <h3>OpenAI SDK</h3>
+          <p class="description">Python SDK documentation for GPT models</p>
+          <div class="price">0.002</div>
+          <div class="price-unit">USDC</div>
           <ul class="price-features">
             <li>Chat Completions API</li>
-            <li>Multimodal input guide</li>
-            <li>1M context examples</li>
+            <li>Multimodal input</li>
+            <li>Streaming examples</li>
           </ul>
         </div>
         <div class="price-card">
-          <h3>Combined Bundle</h3>
-          <p class="description">Everything included plus integration patterns</p>
-          <div class="price">0.005 <span>USDC</span></div>
+          <h3>Complete Bundle</h3>
+          <p class="description">All 27 packages included</p>
+          <div class="price">0.025</div>
+          <div class="price-unit">USDC</div>
           <ul class="price-features">
             <li>All documentation</li>
             <li>Integration patterns</li>
-            <li>Best practices guide</li>
+            <li>50% savings</li>
           </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="why-solana" id="why-solana">
+  <section class="benefits" id="network">
     <div class="container">
-      <h2 class="section-title">Why Solana + USDC?</h2>
+      <div class="section-header">
+        <span class="section-tag">// Why Solana + USDC</span>
+        <h2 class="section-title">Network advantages</h2>
+        <p class="section-subtitle">Built for micropayments at scale</p>
+      </div>
       <div class="benefits-grid">
         <div class="benefit">
-          <div class="benefit-icon">&#9889;</div>
+          <span class="benefit-icon">⚡</span>
           <h3>400ms Finality</h3>
           <p>Transactions confirm in under a second. Your agent gets docs instantly.</p>
         </div>
         <div class="benefit">
-          <div class="benefit-icon">&#128184;</div>
+          <span class="benefit-icon">💸</span>
           <h3>~$0.00025 Fees</h3>
           <p>Send $0.001 and only pay a fraction of a cent in network fees.</p>
         </div>
         <div class="benefit">
-          <div class="benefit-icon">&#128311;</div>
+          <span class="benefit-icon">🔵</span>
           <h3>USDC Stablecoin</h3>
           <p>No crypto volatility. 1 USDC = $1 USD, always. Circle-backed.</p>
         </div>
         <div class="benefit">
-          <div class="benefit-icon">&#128142;</div>
-          <h3>Production-Grade</h3>
-          <p>Solana processes 65,000 TPS. Built for real-world scale.</p>
+          <span class="benefit-icon">💎</span>
+          <h3>65,000 TPS</h3>
+          <p>Solana handles massive throughput. Built for real-world scale.</p>
         </div>
       </div>
     </div>
@@ -1162,15 +1660,33 @@ curl https://contextnow.dev/buy/stripe-2026 \\
 
   <footer>
     <div class="container">
-      <div class="footer-links">
-        <a href="/catalog">Documentation Catalog</a>
-        <a href="/payment-info">Payment API</a>
-        <a href="https://solscan.io" target="_blank">Solscan</a>
-        <a href="https://jup.ag" target="_blank">Get USDC</a>
-        <a href="mailto:support@contextnow.dev">Contact</a>
+      <div class="footer-content">
+        <div class="footer-brand">
+          <a href="/" class="footer-logo">⚡ Context<span>Now</span></a>
+          <p class="footer-tagline">Fresh documentation for AI agents via HTTP 402 micropayments on Solana.</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4>Product</h4>
+            <a href="/catalog">Documentation Catalog</a>
+            <a href="/payment-info">Payment API</a>
+            <a href="https://github.com/contextnow/contextnow-api" target="_blank">GitHub</a>
+          </div>
+          <div class="footer-column">
+            <h4>Resources</h4>
+            <a href="https://solscan.io" target="_blank">Solscan</a>
+            <a href="https://jup.ag" target="_blank">Get USDC</a>
+            <a href="mailto:support@contextnow.dev">Support</a>
+          </div>
+        </div>
       </div>
-      <p class="copyright">© 2026 ContextNow. Powered by USDC on Solana.</p>
-      <p class="copyright" style="margin-top: 8px;">Questions? <a href="mailto:support@contextnow.dev" style="color: var(--cyan);">support@contextnow.dev</a></p>
+      <div class="footer-bottom">
+        <span class="copyright">© 2026 CONTEXTNOW // POWERED BY USDC ON SOLANA</span>
+        <div class="footer-status">
+          <span class="status-dot"></span>
+          All systems operational
+        </div>
+      </div>
     </div>
   </footer>
 </body>
@@ -1186,15 +1702,15 @@ app.get('/', (req, res) => {
 function generateCatalogPage() {
   // Category display configuration
   const categoryConfig = {
-    'bundle': { title: 'Bundles', subtitle: 'Best value - save up to 50%', order: 0 },
-    'ai': { title: 'AI / LLM', subtitle: 'OpenAI, Anthropic, LangChain & more', order: 1 },
-    'database': { title: 'Database', subtitle: 'ORMs, drivers & serverless databases', order: 2 },
-    'web3': { title: 'Web3 / Blockchain', subtitle: 'Ethereum, Solana & wallet libraries', order: 3 },
-    'framework': { title: 'Web Frameworks', subtitle: 'Next.js, Remix, Astro', order: 4 },
-    'communication': { title: 'Communication', subtitle: 'SMS, email & messaging', order: 5 },
-    'infrastructure': { title: 'Infrastructure', subtitle: 'Deployment & hosting', order: 6 },
-    'payments': { title: 'Payments', subtitle: 'Payment processing', order: 7 },
-    'testing': { title: 'Testing', subtitle: 'Unit & E2E testing', order: 8 }
+    'bundle': { title: 'Bundles', subtitle: 'Best value - save up to 50%', order: 0, icon: '📦' },
+    'ai': { title: 'AI / LLM', subtitle: 'OpenAI, Anthropic, LangChain & more', order: 1, icon: '🧠' },
+    'database': { title: 'Database', subtitle: 'ORMs, drivers & serverless databases', order: 2, icon: '💾' },
+    'web3': { title: 'Web3 / Blockchain', subtitle: 'Ethereum, Solana & wallet libraries', order: 3, icon: '⛓️' },
+    'framework': { title: 'Web Frameworks', subtitle: 'Next.js, Remix, Astro', order: 4, icon: '🚀' },
+    'communication': { title: 'Communication', subtitle: 'SMS, email & messaging', order: 5, icon: '📡' },
+    'infrastructure': { title: 'Infrastructure', subtitle: 'Deployment & hosting', order: 6, icon: '☁️' },
+    'payments': { title: 'Payments', subtitle: 'Payment processing', order: 7, icon: '💳' },
+    'testing': { title: 'Testing', subtitle: 'Unit & E2E testing', order: 8, icon: '🧪' }
   };
 
   // Group items by category
@@ -1212,23 +1728,25 @@ function generateCatalogPage() {
 
   // Generate HTML for each category section
   const sections = sortedCategories.map(cat => {
-    const config = categoryConfig[cat] || { title: cat, subtitle: '' };
+    const config = categoryConfig[cat] || { title: cat, subtitle: '', icon: '📄' };
     const items = byCategory[cat];
 
     const cards = items.map(item => {
-      const isBundle = item.category === 'bundle';
       const isFeatured = item.id === 'bundle-all';
       return `
         <div class="product-card${isFeatured ? ' featured' : ''}">
-          ${isFeatured ? '<div class="featured-badge">BEST VALUE</div>' : ''}
+          ${isFeatured ? '<div class="featured-badge">// BEST VALUE</div>' : ''}
           <div class="product-icon">${item.icon}</div>
           <h3>${item.name}</h3>
           <div class="product-price">
             <span class="price-amount">${item.price}</span>
             <span class="price-unit">USDC</span>
           </div>
-          <a href="/buy/${item.id}" class="btn btn-purchase">Purchase</a>
-          ${item.docs && item.docs !== '/catalog' ? `<a href="${item.docs}" class="docs-link" target="_blank">Official Docs →</a>` : ''}
+          <a href="/buy/${item.id}" class="btn-purchase">
+            <span class="btn-text">Purchase</span>
+            <span class="btn-arrow">→</span>
+          </a>
+          ${item.docs && item.docs !== '/catalog' ? `<a href="${item.docs}" class="docs-link" target="_blank">View official docs</a>` : ''}
         </div>
       `;
     }).join('');
@@ -1236,8 +1754,12 @@ function generateCatalogPage() {
     return `
       <section class="category-section">
         <div class="category-header">
-          <h2>${config.title}</h2>
-          <p>${config.subtitle}</p>
+          <div class="category-icon">${config.icon}</div>
+          <div class="category-info">
+            <h2>${config.title}</h2>
+            <p>${config.subtitle}</p>
+          </div>
+          <div class="category-count">${items.length} packages</div>
         </div>
         <div class="products-grid">
           ${cards}
@@ -1253,46 +1775,106 @@ function generateCatalogPage() {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Catalog - ContextNow</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg-primary: #0F172A;
-      --bg-secondary: #1E293B;
-      --bg-card: #334155;
-      --blue: #00D9FF;
-      --blue-dim: #00b8d9;
-      --blue-glow: rgba(0, 217, 255, 0.3);
-      --indigo: #6366F1;
-      --indigo-dim: #4F46E5;
-      --text-primary: #F8FAFC;
-      --text-secondary: #CBD5E1;
-      --text-dim: #64748B;
-      --border: #475569;
+      --bg-void: #030305;
+      --bg-primary: #08080c;
+      --bg-elevated: #0d0d12;
+      --bg-card: #111118;
+      --bg-card-hover: #16161f;
+      --cyan: #00F0FF;
+      --cyan-dim: #00c4d4;
+      --cyan-glow: rgba(0, 240, 255, 0.4);
+      --magenta: #FF00FF;
+      --magenta-dim: #cc00cc;
+      --magenta-glow: rgba(255, 0, 255, 0.3);
+      --amber: #FFB800;
+      --text-primary: #f0f0f5;
+      --text-secondary: #8888a0;
+      --text-dim: #55556a;
+      --border: #1a1a24;
+      --border-glow: #2a2a3a;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg-primary);
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-void);
       color: var(--text-primary);
-      line-height: 1.6;
+      line-height: 1.7;
       min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Scanline overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* Grid background */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: -1;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1300px;
       margin: 0 auto;
       padding: 0 24px;
     }
 
+    /* Navigation */
     nav {
       padding: 20px 0;
       border-bottom: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(10px);
+      background: rgba(8, 8, 12, 0.95);
+      backdrop-filter: blur(20px);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
     }
 
     nav .container {
@@ -1302,46 +1884,71 @@ function generateCatalogPage() {
     }
 
     .logo {
+      font-family: 'Syne', sans-serif;
       font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--blue);
+      font-weight: 800;
+      color: var(--cyan);
       text-decoration: none;
       display: flex;
       align-items: center;
       gap: 8px;
+      text-shadow: 0 0 20px var(--cyan-glow);
     }
 
-    .logo span { color: var(--text-primary); }
+    .logo span { color: var(--text-primary); text-shadow: none; }
 
     .back-link {
+      font-family: 'JetBrains Mono', monospace;
       display: flex;
       align-items: center;
       gap: 8px;
-      color: var(--text-secondary);
+      color: var(--text-dim);
       text-decoration: none;
-      font-size: 0.95rem;
-      padding: 8px 16px;
-      border-radius: 8px;
+      font-size: 0.8rem;
+      padding: 10px 20px;
       border: 1px solid var(--border);
-      transition: all 0.2s;
+      letter-spacing: 0.05em;
+      transition: all 0.3s;
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
     }
 
     .back-link:hover {
-      color: var(--blue);
-      border-color: var(--blue);
+      color: var(--cyan);
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px var(--cyan-glow);
     }
 
+    /* Page Header */
     .page-header {
-      padding: 60px 0 40px;
+      padding: 80px 0 60px;
       text-align: center;
-      background: radial-gradient(ellipse at top, rgba(99, 102, 241, 0.15) 0%, transparent 60%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(ellipse at 30% 0%, rgba(0, 240, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 100%, rgba(255, 0, 255, 0.05) 0%, transparent 50%);
+      pointer-events: none;
     }
 
     .page-header h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
       margin-bottom: 16px;
-      background: linear-gradient(135deg, var(--text-primary) 0%, var(--blue) 100%);
+      position: relative;
+    }
+
+    .page-header h1 .gradient {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--magenta) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -1350,101 +1957,212 @@ function generateCatalogPage() {
     .page-header p {
       color: var(--text-secondary);
       font-size: 1.1rem;
-      max-width: 600px;
+      max-width: 500px;
       margin: 0 auto;
+      font-weight: 300;
+      position: relative;
     }
 
-    .category-section {
-      padding: 40px 0;
-      border-bottom: 1px solid var(--border);
+    /* Stats Bar */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin: 40px 0 60px;
+      animation: fadeInUp 0.6s ease-out 0.2s backwards;
     }
 
-    .category-section:last-child {
-      border-bottom: none;
+    @media (max-width: 700px) {
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
     }
 
-    .category-header {
-      margin-bottom: 32px;
+    .stat {
+      background: var(--bg-card);
+      padding: 32px 24px;
+      text-align: center;
+      transition: all 0.3s;
     }
 
-    .category-header h2 {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--text-primary);
+    .stat:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--cyan);
+      line-height: 1;
       margin-bottom: 8px;
     }
 
-    .category-header p {
+    .stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
       color: var(--text-dim);
-      font-size: 0.95rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
     }
 
+    /* Category Sections */
+    .category-section {
+      margin-bottom: 60px;
+      animation: fadeInUp 0.6s ease-out backwards;
+    }
+
+    .category-section:nth-child(1) { animation-delay: 0.1s; }
+    .category-section:nth-child(2) { animation-delay: 0.15s; }
+    .category-section:nth-child(3) { animation-delay: 0.2s; }
+    .category-section:nth-child(4) { animation-delay: 0.25s; }
+    .category-section:nth-child(5) { animation-delay: 0.3s; }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      .category-header {
+        flex-wrap: wrap;
+      }
+      .category-count {
+        width: 100%;
+        text-align: left;
+        margin-top: 8px;
+      }
+    }
+
+    .category-icon {
+      font-size: 2rem;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    }
+
+    .category-info {
+      flex: 1;
+    }
+
+    .category-info h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .category-info p {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      font-weight: 300;
+    }
+
+    .category-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--cyan);
+      background: var(--bg-card);
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      letter-spacing: 0.05em;
+    }
+
+    /* Products Grid */
     .products-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
     }
 
-    @media (max-width: 640px) {
-      .products-grid { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 500px) {
+      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     }
 
-    @media (max-width: 400px) {
+    @media (max-width: 380px) {
       .products-grid { grid-template-columns: 1fr; }
     }
 
     .product-card {
-      background: var(--bg-secondary);
+      background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
+      padding: 24px 20px;
       position: relative;
-      transition: all 0.2s ease;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    }
+
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
     }
 
     .product-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--blue);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+      transform: translateY(-6px);
+      border-color: var(--cyan);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px var(--cyan-glow);
     }
 
+    .product-card:hover::before { opacity: 1; }
+
     .product-card.featured {
-      border-color: var(--indigo);
-      background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(99, 102, 241, 0.1) 100%);
+      border-color: var(--magenta);
+      background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255, 0, 255, 0.08) 100%);
+    }
+
+    .product-card.featured::before {
+      background: linear-gradient(90deg, transparent, var(--magenta), transparent);
     }
 
     .product-card.featured:hover {
-      border-color: var(--indigo);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(99, 102, 241, 0.2);
+      border-color: var(--magenta);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 40px var(--magenta-glow);
     }
 
     .featured-badge {
       position: absolute;
-      top: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-dim) 100%);
-      color: white;
+      top: -1px;
+      left: 20px;
+      background: var(--magenta);
+      color: var(--bg-void);
       padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6rem;
       font-weight: 700;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
     }
 
     .product-icon {
-      font-size: 2rem;
-      margin-bottom: 12px;
+      font-size: 2.2rem;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
     }
 
     .product-card h3 {
+      font-family: 'Outfit', sans-serif;
       font-size: 0.95rem;
       font-weight: 600;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
       color: var(--text-primary);
       line-height: 1.3;
     }
@@ -1453,119 +2171,176 @@ function generateCatalogPage() {
       display: flex;
       align-items: baseline;
       justify-content: center;
-      gap: 4px;
-      margin-bottom: 16px;
-      padding: 8px 12px;
-      background: var(--bg-primary);
-      border-radius: 8px;
+      gap: 6px;
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      background: var(--bg-elevated);
       width: 100%;
+      border: 1px solid var(--border);
     }
 
     .price-amount {
-      font-size: 1.25rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
       font-weight: 700;
-      color: var(--blue);
+      color: var(--cyan);
     }
 
+    .product-card.featured .price-amount { color: var(--magenta); }
+
     .price-unit {
+      font-family: 'JetBrains Mono', monospace;
       color: var(--text-dim);
-      font-size: 0.75rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
     }
 
     .btn-purchase {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       width: 100%;
-      padding: 10px 16px;
-      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dim) 100%);
-      color: var(--bg-primary);
+      padding: 12px 20px;
+      background: var(--cyan);
+      color: var(--bg-void);
       text-decoration: none;
-      text-align: center;
-      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
       font-weight: 600;
-      font-size: 0.85rem;
-      transition: all 0.2s;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: all 0.3s;
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
     }
 
     .btn-purchase:hover {
+      box-shadow: 0 0 30px var(--cyan-glow);
       transform: scale(1.02);
-      box-shadow: 0 4px 12px var(--blue-glow);
+    }
+
+    .btn-arrow {
+      transition: transform 0.3s;
+    }
+
+    .btn-purchase:hover .btn-arrow {
+      transform: translateX(4px);
     }
 
     .product-card.featured .btn-purchase {
-      background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-dim) 100%);
+      background: var(--magenta);
+    }
+
+    .product-card.featured .btn-purchase:hover {
+      box-shadow: 0 0 30px var(--magenta-glow);
     }
 
     .docs-link {
       display: block;
-      margin-top: 8px;
+      margin-top: 12px;
       color: var(--text-dim);
       text-decoration: none;
       font-size: 0.75rem;
-      transition: color 0.2s;
+      transition: all 0.3s;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .docs-link:hover {
-      color: var(--blue);
+      color: var(--cyan);
     }
 
+    /* API Notice */
     .api-notice {
       text-align: center;
-      padding: 24px;
-      background: var(--bg-secondary);
-      border-radius: 12px;
-      margin: 40px 0;
+      padding: 40px;
+      background: var(--bg-card);
       border: 1px solid var(--border);
+      margin: 60px 0;
+      position: relative;
+      clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+    }
+
+    .api-notice::before {
+      content: '// API ACCESS';
+      position: absolute;
+      top: -1px;
+      left: 40px;
+      background: var(--bg-void);
+      color: var(--text-dim);
+      padding: 4px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      border: 1px solid var(--border);
+      border-top: none;
     }
 
     .api-notice p {
       color: var(--text-secondary);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+      font-weight: 300;
     }
 
     .api-notice a {
-      color: var(--blue);
+      color: var(--cyan);
       text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
     }
 
     .api-notice a:hover {
-      text-decoration: underline;
+      text-shadow: 0 0 10px var(--cyan-glow);
     }
 
-    .stats-bar {
-      display: flex;
-      justify-content: center;
-      gap: 48px;
-      padding: 24px;
-      background: var(--bg-secondary);
-      border-radius: 12px;
-      margin-bottom: 40px;
-      border: 1px solid var(--border);
-    }
-
-    .stat {
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--blue);
-    }
-
-    .stat-label {
-      font-size: 0.85rem;
-      color: var(--text-dim);
-    }
-
+    /* Footer */
     footer {
-      padding: 30px 0;
+      padding: 40px 0;
       border-top: 1px solid var(--border);
-      text-align: center;
+      background: var(--bg-primary);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @media (max-width: 600px) {
+      .footer-content {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
     }
 
     .copyright {
+      font-family: 'JetBrains Mono', monospace;
       color: var(--text-dim);
-      font-size: 0.85rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .copyright a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+    .footer-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #4ade80;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+      animation: pulse 2s infinite;
     }
   </style>
 </head>
@@ -1579,7 +2354,7 @@ function generateCatalogPage() {
 
   <header class="page-header">
     <div class="container">
-      <h1>Documentation Catalog</h1>
+      <h1>Documentation <span class="gradient">Catalog</span></h1>
       <p>27 premium documentation packages. Pay with USDC on Solana.</p>
     </div>
   </header>
@@ -1613,8 +2388,13 @@ function generateCatalogPage() {
 
   <footer>
     <div class="container">
-      <p class="copyright">© 2026 ContextNow. Pay for what you use.</p>
-      <p class="copyright" style="margin-top: 8px;">Need help? <a href="mailto:support@contextnow.dev" style="color: var(--blue);">support@contextnow.dev</a></p>
+      <div class="footer-content">
+        <span class="copyright">© 2026 CONTEXTNOW // <a href="mailto:support@contextnow.dev">support@contextnow.dev</a></span>
+        <div class="footer-status">
+          <span class="status-dot"></span>
+          All systems operational
+        </div>
+      </div>
     </div>
   </footer>
 </body>

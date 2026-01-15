@@ -1,152 +1,47 @@
-# ============================================
-# WATCHTOWER - Documentation Update Workflow
-# ============================================
-# This workflow automatically monitors 24+ library repositories
-# for new releases and updates the version database.
-#
-# Schedule: Runs every hour
-# Manual: Can be triggered via workflow_dispatch
-# ============================================
-
 name: Update Documentation
 
 on:
-  # Run every hour at minute 0
   schedule:
-    - cron: '0 * * * *'
+    - cron: '0 * * * *'  # Every hour
+  workflow_dispatch:  # Allow manual trigger
 
-  # Allow manual trigger from GitHub Actions UI
-  workflow_dispatch:
-    inputs:
-      debug:
-        description: 'Enable debug logging'
-        required: false
-        default: 'false'
-        type: boolean
-
-# Only allow one instance to run at a time
-# Cancel in-progress runs if a new one is triggered
-concurrency:
-  group: watchtower
-  cancel-in-progress: true
+permissions:
+  contents: write  # REQUIRED to push commits
 
 jobs:
-  update-docs:
-    name: Check for Documentation Updates
+  watchtower:
     runs-on: ubuntu-latest
 
-    # Only run on main branch
-    if: github.ref == 'refs/heads/main'
-
-    # Set timeout to prevent hanging jobs
-    timeout-minutes: 15
-
     steps:
-      # ----------------------------------------
-      # Step 1: Checkout the repository
-      # ----------------------------------------
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Fetch full history for proper git operations
-          fetch-depth: 0
-          # Use a token with write permissions for pushing
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # ----------------------------------------
-      # Step 2: Setup Node.js environment
-      # ----------------------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          # Cache npm dependencies for faster builds
-          cache: 'npm'
+          node-version: '18'
 
-      # ----------------------------------------
-      # Step 3: Install dependencies
-      # ----------------------------------------
       - name: Install dependencies
-        run: npm ci
-        # Use 'npm ci' instead of 'npm install' for:
-        # - Faster, more reliable builds
-        # - Exact version matching from package-lock.json
-        # - Clean slate (removes existing node_modules)
+        run: npm install
 
-      # ----------------------------------------
-      # Step 4: Run the watchtower script
-      # ----------------------------------------
       - name: Run watchtower
-        id: watchtower
-        run: |
-          echo "Starting watchtower scan..."
-          npm run watchtower
-          echo "Watchtower scan complete."
-        env:
-          # Increase GitHub API rate limit with token
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Enable debug mode if requested
-          DEBUG: ${{ inputs.debug }}
+        run: npm run watchtower
 
-      # ----------------------------------------
-      # Step 5: Check for changes in version_db.json
-      # ----------------------------------------
-      - name: Check for changes
-        id: changes
+      - name: Configure git
         run: |
-          # Check if version_db.json has been modified
-          if git diff --quiet version_db.json 2>/dev/null; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-            echo "No changes detected in version_db.json"
-          else
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "Changes detected in version_db.json"
-            echo ""
-            echo "Changed versions:"
-            git diff version_db.json || true
-          fi
-
-      # ----------------------------------------
-      # Step 6: Commit and push changes (if any)
-      # ----------------------------------------
-      - name: Commit and push changes
-        if: steps.changes.outputs.has_changes == 'true'
-        run: |
-          # Configure git user for the commit
           git config user.name "ContextNow Bot"
           git config user.email "bot@contextnow.dev"
 
-          # Stage the version database file
-          git add version_db.json
-
-          # Create commit with timestamp
-          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
-          git commit -m "chore: update documentation versions [automated]" \
-                     -m "Watchtower scan completed at ${TIMESTAMP}" \
-                     -m "Libraries checked: 24"
-
-          # Push changes to main branch
-          git push origin main
-
-          echo "Changes committed and pushed successfully!"
-
-      # ----------------------------------------
-      # Step 7: Summary output
-      # ----------------------------------------
-      - name: Job summary
+      - name: Commit and push changes
         run: |
-          echo "## Watchtower Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Run time:** $(date -u +"%Y-%m-%d %H:%M UTC")" >> $GITHUB_STEP_SUMMARY
-          echo "- **Libraries monitored:** 24" >> $GITHUB_STEP_SUMMARY
-          echo "- **Changes detected:** ${{ steps.changes.outputs.has_changes }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          if [ "${{ steps.changes.outputs.has_changes }}" == "true" ]; then
-            echo "### Updated Versions" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            git diff HEAD~1 version_db.json 2>/dev/null || echo "First run - all versions are new"
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          git add -A
+          if git diff-index --quiet HEAD --; then
+            echo "No changes to commit"
           else
-            echo "_All documentation versions are up to date._" >> $GITHUB_STEP_SUMMARY
+            git commit -m "chore: update documentation versions [automated]"
+            git push
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
