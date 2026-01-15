@@ -528,6 +528,19 @@ const LANDING_PAGE = `<!DOCTYPE html>
     .section-title {
       text-align: center;
       font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      margin-bottom: 50px;
+    }
+
+    .how-it-works .section-title,
+    .api-examples .section-title,
+    .why-solana .section-title {
       margin-bottom: 60px;
     }
 
@@ -718,6 +731,47 @@ const LANDING_PAGE = `<!DOCTYPE html>
       font-weight: 700;
     }
 
+    /* Why Solana Section */
+    .why-solana {
+      padding: 80px 0;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 32px;
+    }
+
+    .benefit {
+      text-align: center;
+      padding: 32px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+
+    .benefit:hover {
+      border-color: var(--cyan);
+      transform: translateY(-4px);
+    }
+
+    .benefit-icon {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+    }
+
+    .benefit h3 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+      color: var(--cyan);
+    }
+
+    .benefit p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
     /* Footer */
     footer {
       padding: 40px 0;
@@ -752,19 +806,19 @@ const LANDING_PAGE = `<!DOCTYPE html>
       <a href="/" class="logo">⚡ Context<span>Now</span></a>
       <div class="nav-links">
         <a href="#how-it-works">How It Works</a>
-        <a href="#api">API</a>
         <a href="#pricing">Pricing</a>
-        <a href="https://github.com/contextnow/contextnow-api" target="_blank">GitHub</a>
+        <a href="#why-solana">Why Solana</a>
+        <a href="/payment-info">API</a>
       </div>
     </div>
   </nav>
 
   <section class="hero">
     <div class="container">
-      <div class="hero-badge">HTTP 402 • Micropayments • AI-Native</div>
+      <div class="hero-badge">HTTP 402 • USDC on Solana • Real Micropayments</div>
       <div class="hero-logo">⚡</div>
       <h1>Fresh documentation for AI agents</h1>
-      <p>Stop scraping outdated docs. Pay-per-request access to always-current API documentation, designed for autonomous AI agents.</p>
+      <p>Stop scraping outdated docs. Pay $0.001-$0.005 USDC on Solana for instant access to always-current API documentation.</p>
       <div class="hero-buttons">
         <a href="/catalog" class="btn btn-primary">View Catalog</a>
         <a href="https://github.com/contextnow/contextnow-api" class="btn btn-secondary" target="_blank">GitHub →</a>
@@ -783,13 +837,18 @@ const LANDING_PAGE = `<!DOCTYPE html>
         </div>
         <div class="step">
           <div class="step-number">2</div>
-          <h3>Receive 402 Payment Required</h3>
-          <p>We return pricing details including amount, currency, and payment address.</p>
+          <h3>Receive 402 + USDC Details</h3>
+          <p>We return USDC amount, Solana wallet address, and payment instructions.</p>
         </div>
         <div class="step">
           <div class="step-number">3</div>
-          <h3>Pay & Access</h3>
-          <p>Send micropayment, include proof in header, receive fresh documentation instantly.</p>
+          <h3>Send 0.001-0.005 USDC</h3>
+          <p>Send USDC on Solana (~$0.00025 fee). Transaction confirms in ~400ms.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">4</div>
+          <h3>Get Instant Access</h3>
+          <p>Include transaction signature in header, receive fresh documentation instantly.</p>
         </div>
       </div>
     </div>
@@ -804,33 +863,37 @@ const LANDING_PAGE = `<!DOCTYPE html>
             <span class="code-title">Request without payment</span>
             <span class="code-badge error">402</span>
           </div>
-          <pre><span class="comment"># Freeloader attempt</span>
-curl http://localhost:3000/buy/stripe-2026
+          <pre><span class="comment"># No payment = 402 with instructions</span>
+curl https://contextnow.dev/buy/stripe-2026
 
 <span class="comment"># Response:</span>
 {
   <span class="property">"error"</span>: <span class="string">"Payment Required"</span>,
   <span class="property">"pricing"</span>: {
     <span class="property">"amount"</span>: <span class="number">0.001</span>,
-    <span class="property">"currency"</span>: <span class="string">"USD"</span>,
-    <span class="property">"receiver_address"</span>: <span class="string">"0x742d..."</span>
+    <span class="property">"currency"</span>: <span class="string">"USDC"</span>,
+    <span class="property">"network"</span>: <span class="string">"Solana (Mainnet)"</span>
+  },
+  <span class="property">"payment_details"</span>: {
+    <span class="property">"usdc_token_account"</span>: <span class="string">"GbNZA3pV..."</span>
   }
 }</pre>
         </div>
         <div class="code-block">
           <div class="code-header">
-            <span class="code-title">Request with valid payment</span>
+            <span class="code-title">Request with Solana tx signature</span>
             <span class="code-badge success">200</span>
           </div>
-          <pre><span class="comment"># Authenticated request</span>
-curl http://localhost:3000/buy/stripe-2026 \\
-  -H <span class="string">"Authorization: valid_proof"</span>
+          <pre><span class="comment"># Include your Solana tx signature</span>
+curl https://contextnow.dev/buy/stripe-2026 \\
+  -H <span class="string">"x-payment-proof: 5UfD4v..."</span>
 
 <span class="comment"># Response:</span>
 {
   <span class="property">"success"</span>: <span class="keyword">true</span>,
   <span class="property">"content"</span>: <span class="string">"# Stripe API..."</span>,
-  <span class="property">"charged"</span>: <span class="number">0.001</span>
+  <span class="property">"charged"</span>: <span class="number">0.001</span>,
+  <span class="property">"currency"</span>: <span class="string">"USDC"</span>
 }</pre>
         </div>
       </div>
@@ -840,11 +903,12 @@ curl http://localhost:3000/buy/stripe-2026 \\
   <section class="pricing" id="pricing">
     <div class="container">
       <h2 class="section-title">Documentation Catalog</h2>
+      <p class="section-subtitle">Real USDC micropayments on Solana Mainnet. Not a demo.</p>
       <div class="pricing-grid">
         <div class="price-card">
           <h3>Stripe API 2026</h3>
           <p class="description">Complete Stripe SDK documentation with latest features</p>
-          <div class="price">$0.001 <span>/ request</span></div>
+          <div class="price">0.001 <span>USDC</span></div>
           <ul class="price-features">
             <li>Payment Intents API</li>
             <li>Neural verification docs</li>
@@ -854,7 +918,7 @@ curl http://localhost:3000/buy/stripe-2026 \\
         <div class="price-card featured">
           <h3>OpenAI SDK 2026</h3>
           <p class="description">Python SDK documentation for GPT-5 and beyond</p>
-          <div class="price">$0.002 <span>/ request</span></div>
+          <div class="price">0.002 <span>USDC</span></div>
           <ul class="price-features">
             <li>Chat Completions API</li>
             <li>Multimodal input guide</li>
@@ -864,7 +928,7 @@ curl http://localhost:3000/buy/stripe-2026 \\
         <div class="price-card">
           <h3>Combined Bundle</h3>
           <p class="description">Everything included plus integration patterns</p>
-          <div class="price">$0.005 <span>/ request</span></div>
+          <div class="price">0.005 <span>USDC</span></div>
           <ul class="price-features">
             <li>All documentation</li>
             <li>Integration patterns</li>
@@ -875,14 +939,43 @@ curl http://localhost:3000/buy/stripe-2026 \\
     </div>
   </section>
 
+  <section class="why-solana" id="why-solana">
+    <div class="container">
+      <h2 class="section-title">Why Solana + USDC?</h2>
+      <div class="benefits-grid">
+        <div class="benefit">
+          <div class="benefit-icon">&#9889;</div>
+          <h3>400ms Finality</h3>
+          <p>Transactions confirm in under a second. Your agent gets docs instantly.</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">&#128184;</div>
+          <h3>~$0.00025 Fees</h3>
+          <p>Send $0.001 and only pay a fraction of a cent in network fees.</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">&#128311;</div>
+          <h3>USDC Stablecoin</h3>
+          <p>No crypto volatility. 1 USDC = $1 USD, always. Circle-backed.</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">&#128142;</div>
+          <h3>Production-Grade</h3>
+          <p>Solana processes 65,000 TPS. Built for real-world scale.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <footer>
     <div class="container">
       <div class="footer-links">
-        <a href="https://github.com/contextnow/contextnow-api" target="_blank">GitHub</a>
-        <a href="https://twitter.com/contextnowdev" target="_blank">Twitter</a>
-        <a href="/catalog">API Catalog</a>
+        <a href="/catalog">Documentation Catalog</a>
+        <a href="/payment-info">Payment API</a>
+        <a href="https://solscan.io" target="_blank">Solscan</a>
+        <a href="https://jup.ag" target="_blank">Get USDC</a>
       </div>
-      <p class="copyright">© 2026 ContextNow. Pay for what you use.</p>
+      <p class="copyright">© 2026 ContextNow. Powered by USDC on Solana.</p>
     </div>
   </footer>
 </body>
