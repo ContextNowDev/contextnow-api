@@ -1,6 +1,6 @@
 {
   "openai/openai-python": "v2.15.0",
-  "stripe/stripe-node": "v20.1.2",
+  "stripe/stripe-node": "v20.2.0",
   "anthropics/anthropic-sdk-python": "v0.76.0",
   "langchain-ai/langchain": "langchain-core==0.3.83",
   "langchain-ai/langchainjs": "@langchain/google-webauth@2.1.10",
