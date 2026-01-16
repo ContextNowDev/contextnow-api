@@ -4,7 +4,7 @@
   "anthropics/anthropic-sdk-python": "v0.76.0",
   "langchain-ai/langchain": "langchain-core==0.3.83",
   "langchain-ai/langchainjs": "@langchain/google-webauth@2.1.10",
-  "huggingface/transformers": "v4.57.5",
+  "huggingface/transformers": "v4.57.6",
   "vercel/next.js": "v16.1.2",
   "remix-run/remix": "component@0.2.1",
   "withastro/astro": "@astrojs/vercel@9.0.4",
