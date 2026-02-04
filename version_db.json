@@ -11,7 +11,7 @@
   "twilio/twilio-node": "5.12.0",
   "sendgrid/sendgrid-nodejs": "8.1.6",
   "supabase/supabase-js": "v2.94.0",
-  "mongodb/node-mongodb-native": "v7.0.0",
+  "mongodb/node-mongodb-native": "v7.1.0",
   "planetscale/database-js": "v1.19.0",
   "prisma/prisma": "7.3.0",
   "drizzle-team/drizzle-orm": "0.45.1",
