@@ -1,10 +1,10 @@
 {
-  "openai/openai-python": "v2.16.0",
+  "openai/openai-python": "v2.17.0",
   "stripe/stripe-node": "v20.3.0",
   "anthropics/anthropic-sdk-python": "v0.77.1",
   "langchain-ai/langchain": "langchain-core==1.2.9",
   "langchain-ai/langchainjs": "@langchain/google-vertexai@2.1.15",
-  "huggingface/transformers": "v5.0.0",
+  "huggingface/transformers": "v5.1.0",
   "vercel/next.js": "v16.1.6",
   "remix-run/remix": "remix@3.0.0-alpha.2",
   "withastro/astro": "astro@5.17.1",
