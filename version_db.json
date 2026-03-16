@@ -1,7 +1,7 @@
 {
   "openai/openai-python": "v2.28.0",
   "stripe/stripe-node": "v20.4.1",
-  "anthropics/anthropic-sdk-python": "v0.84.0",
+  "anthropics/anthropic-sdk-python": "v0.85.0",
   "langchain-ai/langchain": "langchain-core==1.2.19",
   "langchain-ai/langchainjs": "langchain@1.2.32",
   "huggingface/transformers": "v5.3.0",
