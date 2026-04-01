@@ -5,7 +5,7 @@
   "langchain-ai/langchain": "langchain-core==1.2.23",
   "langchain-ai/langchainjs": "@langchain/openai@1.4.1",
   "huggingface/transformers": "v5.4.0",
-  "vercel/next.js": "v16.2.1",
+  "vercel/next.js": "v16.2.2",
   "remix-run/remix": "component@0.6.0",
   "withastro/astro": "@astrojs/cloudflare@13.1.6",
   "twilio/twilio-node": "5.13.1",
@@ -22,5 +22,5 @@
   "solana-labs/solana-web3.js": "v1.98.4",
   "ethers-io/ethers.js": "v6.16.0",
   "vitest-dev/vitest": "v4.1.2",
-  "microsoft/playwright": "v1.58.2"
+  "microsoft/playwright": "v1.59.0"
 }
