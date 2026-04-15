@@ -1,11 +1,11 @@
 {
-  "openai/openai-python": "v2.31.0",
+  "openai/openai-python": "v2.32.0",
   "stripe/stripe-node": "v22.0.1",
   "anthropics/anthropic-sdk-python": "v0.95.0",
   "langchain-ai/langchain": "langchain-core==1.2.30",
   "langchain-ai/langchainjs": "@langchain/google-gauth@2.1.27",
   "huggingface/transformers": "v5.5.4",
-  "vercel/next.js": "v16.2.3",
+  "vercel/next.js": "v16.2.4",
   "remix-run/remix": "component@0.6.0",
   "withastro/astro": "astro@6.1.7",
   "twilio/twilio-node": "5.13.1",
