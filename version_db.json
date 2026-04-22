@@ -13,7 +13,7 @@
   "supabase/supabase-js": "v2.104.0",
   "mongodb/node-mongodb-native": "v7.2.0",
   "planetscale/database-js": "v1.20.1",
-  "prisma/prisma": "7.7.0",
+  "prisma/prisma": "7.8.0",
   "drizzle-team/drizzle-orm": "0.45.2",
   "vercel/vercel": "@vercel/oidc@3.2.1",
   "railwayapp/cli": "v4.40.2",
