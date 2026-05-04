@@ -1,7 +1,7 @@
 {
   "openai/openai-python": "v2.33.0",
   "stripe/stripe-node": "v22.1.0",
-  "anthropics/anthropic-sdk-python": "v0.97.0",
+  "anthropics/anthropic-sdk-python": "v0.98.0",
   "langchain-ai/langchain": "langchain-core==1.4.0a2",
   "langchain-ai/langchainjs": "@langchain/google-common@2.1.28",
   "huggingface/transformers": "v5.7.0",
@@ -10,7 +10,7 @@
   "withastro/astro": "@astrojs/cloudflare@13.3.1",
   "twilio/twilio-node": "6.0.0",
   "sendgrid/sendgrid-nodejs": "8.1.6",
-  "supabase/supabase-js": "v2.105.2",
+  "supabase/supabase-js": "v2.105.3",
   "mongodb/node-mongodb-native": "v7.2.0",
   "planetscale/database-js": "v1.20.1",
   "prisma/prisma": "7.8.0",
