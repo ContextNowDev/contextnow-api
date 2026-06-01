@@ -1,5 +1,5 @@
 {
-  "openai/openai-python": "v2.39.0",
+  "openai/openai-python": "v2.40.0",
   "stripe/stripe-node": "v22.2.0",
   "anthropics/anthropic-sdk-python": "v0.105.2",
   "langchain-ai/langchain": "langchain-core==1.4.0",
@@ -15,7 +15,7 @@
   "planetscale/database-js": "v1.20.1",
   "prisma/prisma": "7.8.0",
   "drizzle-team/drizzle-orm": "0.45.2",
-  "vercel/vercel": "@vercel/vc-native@0.0.1",
+  "vercel/vercel": "@vercel/static-build@2.9.34",
   "railwayapp/cli": "v4.66.0",
   "wevm/wagmi": "wagmi@3.6.16",
   "wevm/viem": "viem@2.52.0",
