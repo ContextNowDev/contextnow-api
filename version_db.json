@@ -7,7 +7,7 @@
   "huggingface/transformers": "v5.12.0",
   "vercel/next.js": "v16.2.9",
   "remix-run/remix": "remix@3.0.0-beta.4",
-  "withastro/astro": "@astrojs/netlify@7.0.13",
+  "withastro/astro": "astro@6.4.7",
   "twilio/twilio-node": "6.0.2",
   "sendgrid/sendgrid-nodejs": "8.1.6",
   "supabase/supabase-js": "v2.108.2",
@@ -22,5 +22,5 @@
   "solana-labs/solana-web3.js": "v1.98.4",
   "ethers-io/ethers.js": "v6.16.0",
   "vitest-dev/vitest": "v4.1.8",
-  "microsoft/playwright": "v1.60.0"
+  "microsoft/playwright": "v1.61.0"
 }
