@@ -1,6 +1,6 @@
 {
   "openai/openai-python": "v2.43.0",
-  "stripe/stripe-node": "v22.2.1",
+  "stripe/stripe-node": "v22.2.2",
   "anthropics/anthropic-sdk-python": "v0.111.0",
   "langchain-ai/langchain": "langchain-core==1.4.8",
   "langchain-ai/langchainjs": "@langchain/aws@1.4.1",
