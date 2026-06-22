@@ -7,7 +7,7 @@
   "huggingface/transformers": "v5.12.1",
   "vercel/next.js": "v16.2.9",
   "remix-run/remix": "remix@3.0.0-beta.4",
-  "withastro/astro": "astro@6.4.8",
+  "withastro/astro": "@astrojs/cloudflare@14.0.0",
   "twilio/twilio-node": "6.0.2",
   "sendgrid/sendgrid-nodejs": "8.1.6",
   "supabase/supabase-js": "v2.108.2",
