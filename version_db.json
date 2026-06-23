@@ -22,5 +22,5 @@
   "solana-labs/solana-web3.js": "v1.98.4",
   "ethers-io/ethers.js": "v6.17.0",
   "vitest-dev/vitest": "v4.1.9",
-  "microsoft/playwright": "v1.61.0"
+  "microsoft/playwright": "v1.61.1"
 }
