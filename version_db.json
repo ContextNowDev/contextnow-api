@@ -17,7 +17,7 @@
   "drizzle-team/drizzle-orm": "0.45.2",
   "vercel/vercel": "@vercel/routing-utils@6.4.0",
   "railwayapp/cli": "v5.23.1",
-  "wevm/wagmi": "@wagmi/core@3.5.4",
+  "wevm/wagmi": "@wagmi/connectors@8.0.20",
   "wevm/viem": "viem@2.53.1",
   "solana-labs/solana-web3.js": "v1.98.4",
   "ethers-io/ethers.js": "v6.17.0",
