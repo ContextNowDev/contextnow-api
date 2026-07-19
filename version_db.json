@@ -18,7 +18,7 @@
   "vercel/vercel": "@vercel/passport@0.1.3",
   "railwayapp/cli": "v5.27.0",
   "wevm/wagmi": "@wagmi/vue@0.5.26",
-  "wevm/viem": "viem@2.55.2",
+  "wevm/viem": "viem@2.55.4",
   "solana-labs/solana-web3.js": "v1.98.4",
   "ethers-io/ethers.js": "v6.17.0",
   "vitest-dev/vitest": "v4.1.10",
