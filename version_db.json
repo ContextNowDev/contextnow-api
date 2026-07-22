@@ -15,7 +15,7 @@
   "planetscale/database-js": "v1.20.1",
   "prisma/prisma": "7.9.0",
   "drizzle-team/drizzle-orm": "0.45.2",
-  "vercel/vercel": "@vercel/connect@0.4.2",
+  "vercel/vercel": "@vercel/python@6.51.1",
   "railwayapp/cli": "v5.27.2",
   "wevm/wagmi": "@wagmi/vue@0.5.26",
   "wevm/viem": "viem@2.55.5",
