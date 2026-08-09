@@ -16,7 +16,7 @@
   "prisma/prisma": "v0.17.0",
   "drizzle-team/drizzle-orm": "0.45.2",
   "vercel/vercel": "@vercel/static-build@2.11.13",
-  "railwayapp/cli": "v5.34.2",
+  "railwayapp/cli": "v5.34.3",
   "wevm/wagmi": "wagmi@3.7.6",
   "wevm/viem": "viem@2.55.11",
   "solana-labs/solana-web3.js": "v1.98.4",
