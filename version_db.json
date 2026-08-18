@@ -7,7 +7,7 @@
   "huggingface/transformers": "v5.15.0",
   "vercel/next.js": "v16.3.1",
   "remix-run/remix": "remix@2.17.5",
-  "withastro/astro": "@astrojs/node@11.1.2",
+  "withastro/astro": "@astrojs/preact@6.0.3",
   "twilio/twilio-node": "6.1.0",
   "sendgrid/sendgrid-nodejs": "8.1.6",
   "supabase/supabase-js": "v2.112.3",
@@ -21,6 +21,6 @@
   "wevm/viem": "viem@2.55.18",
   "solana-labs/solana-web3.js": "v1.98.4",
   "ethers-io/ethers.js": "v6.17.0",
-  "vitest-dev/vitest": "v4.1.10",
+  "vitest-dev/vitest": "v4.1.11",
   "microsoft/playwright": "v1.62.1"
 }
