@@ -10,7 +10,7 @@
   "withastro/astro": "astro@7.3.1",
   "twilio/twilio-node": "6.1.0",
   "sendgrid/sendgrid-nodejs": "8.1.6",
-  "supabase/supabase-js": "v2.115.0",
+  "supabase/supabase-js": "v2.116.0",
   "mongodb/node-mongodb-native": "v7.6.0",
   "planetscale/database-js": "v1.20.1",
   "prisma/prisma": "v0.17.0",
