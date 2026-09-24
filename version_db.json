@@ -2,7 +2,7 @@
   "openai/openai-python": "v3.19.2",
   "stripe/stripe-node": "v22.6.2",
   "anthropics/anthropic-sdk-python": "v1.8.0",
-  "langchain-ai/langchain": "langchain-core==1.6.4",
+  "langchain-ai/langchain": "langchain-core==1.6.5",
   "langchain-ai/langchainjs": "@langchain/google@0.2.7",
   "huggingface/transformers": "v5.17.0",
   "vercel/next.js": "v16.3.6",
