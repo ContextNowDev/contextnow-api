@@ -5,7 +5,7 @@
   "langchain-ai/langchain": "langchain-core==1.6.5",
   "langchain-ai/langchainjs": "@langchain/neo4j@0.1.22",
   "huggingface/transformers": "v5.17.0",
-  "vercel/next.js": "v16.3.6",
+  "vercel/next.js": "v16.3.7",
   "remix-run/remix": "remix@2.17.5",
   "withastro/astro": "astro@7.3.5",
   "twilio/twilio-node": "6.1.2",
