@@ -1,7 +1,7 @@
 {
   "openai/openai-python": "v3.22.1",
-  "stripe/stripe-node": "v22.6.2",
-  "anthropics/anthropic-sdk-python": "v1.10.0",
+  "stripe/stripe-node": "v23.0.0",
+  "anthropics/anthropic-sdk-python": "v1.11.0",
   "langchain-ai/langchain": "langchain-core==1.6.6",
   "langchain-ai/langchainjs": "@langchain/neo4j@0.1.22",
   "huggingface/transformers": "v5.18.0",
@@ -18,7 +18,7 @@
   "vercel/vercel": "@vercel/static-build@2.11.13",
   "railwayapp/cli": "v5.63.1",
   "wevm/wagmi": "@wagmi/connectors@8.2.0",
-  "wevm/viem": "viem@2.57.1",
+  "wevm/viem": "viem@2.57.2",
   "solana-labs/solana-web3.js": "v1.99.0",
   "ethers-io/ethers.js": "v6.17.0",
   "vitest-dev/vitest": "v5.0.3",
