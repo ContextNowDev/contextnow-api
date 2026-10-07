@@ -1,7 +1,7 @@
 {
   "openai/openai-python": "v3.26.0",
   "stripe/stripe-node": "v23.0.0",
-  "anthropics/anthropic-sdk-python": "v1.11.0",
+  "anthropics/anthropic-sdk-python": "v1.12.0",
   "langchain-ai/langchain": "langchain-core==1.6.7",
   "langchain-ai/langchainjs": "@langchain/core@1.2.17",
   "huggingface/transformers": "v5.19.0",
@@ -22,5 +22,5 @@
   "solana-labs/solana-web3.js": "v1.99.0",
   "ethers-io/ethers.js": "v6.17.0",
   "vitest-dev/vitest": "v5.0.3",
-  "microsoft/playwright": "v1.63.0"
+  "microsoft/playwright": "v1.64.0"
 }
