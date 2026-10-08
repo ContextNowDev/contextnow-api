@@ -7,7 +7,7 @@
   "huggingface/transformers": "v5.19.0",
   "vercel/next.js": "v16.4.0",
   "remix-run/remix": "remix@3.0.0",
-  "withastro/astro": "@astrojs/vercel@11.0.12",
+  "withastro/astro": "@astrojs/netlify@8.2.8",
   "twilio/twilio-node": "6.1.2",
   "sendgrid/sendgrid-nodejs": "8.1.6",
   "supabase/supabase-js": "v2.117.3",
