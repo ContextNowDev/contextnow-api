@@ -16,10 +16,10 @@
   "prisma/prisma": "7.10.1",
   "drizzle-team/drizzle-orm": "0.45.4",
   "vercel/vercel": "@vercel/static-build@2.11.13",
-  "railwayapp/cli": "v5.70.0",
+  "railwayapp/cli": "v5.71.0",
   "wevm/wagmi": "@wagmi/connectors@8.2.0",
   "wevm/viem": "viem@2.57.7",
-  "solana-labs/solana-web3.js": "v1.99.0",
+  "solana-labs/solana-web3.js": "v3.1.1",
   "ethers-io/ethers.js": "v6.17.0",
   "vitest-dev/vitest": "v5.0.5",
   "microsoft/playwright": "v1.64.1"
