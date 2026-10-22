@@ -1,5 +1,5 @@
 {
-  "openai/openai-python": "v3.36.0",
+  "openai/openai-python": "v3.36.1",
   "stripe/stripe-node": "v23.0.0",
   "anthropics/anthropic-sdk-python": "v2.1.0",
   "langchain-ai/langchain": "langchain-core==1.6.13",
