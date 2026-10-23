@@ -6,7 +6,7 @@
   "langchain-ai/langchainjs": "@langchain/neo4j@0.1.27",
   "huggingface/transformers": "v5.20.2",
   "vercel/next.js": "v16.4.3",
-  "remix-run/remix": "remix@3.0.0",
+  "remix-run/remix": "remix@3.1.0",
   "withastro/astro": "@astrojs/vue@7.1.2",
   "twilio/twilio-node": "6.2.0",
   "sendgrid/sendgrid-nodejs": "8.1.6",
