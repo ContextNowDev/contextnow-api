@@ -1,9 +1,9 @@
 {
   "openai/openai-python": "v3.41.0",
-  "stripe/stripe-node": "v23.0.1",
+  "stripe/stripe-node": "v23.1.0",
   "anthropics/anthropic-sdk-python": "v2.3.0",
-  "langchain-ai/langchain": "langchain-core==1.7.1",
-  "langchain-ai/langchainjs": "@langchain/neo4j@0.1.29",
+  "langchain-ai/langchain": "langchain-core==1.7.3",
+  "langchain-ai/langchainjs": "@langchain/core@1.3.2",
   "huggingface/transformers": "v5.22.0",
   "vercel/next.js": "v16.4.3",
   "remix-run/remix": "remix@3.1.0",
