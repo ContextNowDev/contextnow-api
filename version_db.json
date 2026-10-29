@@ -4,7 +4,7 @@
   "anthropics/anthropic-sdk-python": "v2.3.0",
   "langchain-ai/langchain": "langchain-core==1.7.1",
   "langchain-ai/langchainjs": "@langchain/neo4j@0.1.29",
-  "huggingface/transformers": "v5.21",
+  "huggingface/transformers": "v5.21.1",
   "vercel/next.js": "v16.4.3",
   "remix-run/remix": "remix@3.1.0",
   "withastro/astro": "astro@7.4.4",
