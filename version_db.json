@@ -8,7 +8,7 @@
   "vercel/next.js": "v16.4.5",
   "remix-run/remix": "remix@3.2.0",
   "withastro/astro": "@astrojs/vercel@11.0.20",
-  "twilio/twilio-node": "6.2.0",
+  "twilio/twilio-node": "6.3.0",
   "sendgrid/sendgrid-nodejs": "8.1.6",
   "supabase/supabase-js": "v2.119.0",
   "mongodb/node-mongodb-native": "v7.8.0",
