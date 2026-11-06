@@ -1,13 +1,13 @@
 {
-  "openai/openai-python": "v3.46.0",
+  "openai/openai-python": "v3.47.0",
   "stripe/stripe-node": "v23.1.0",
-  "anthropics/anthropic-sdk-python": "v2.5.0",
+  "anthropics/anthropic-sdk-python": "v2.6.0",
   "langchain-ai/langchain": "langchain-core==1.7.6",
-  "langchain-ai/langchainjs": "langchain@1.6.1",
+  "langchain-ai/langchainjs": "langchain@1.6.2",
   "huggingface/transformers": "v5.22.1",
   "vercel/next.js": "v16.4.5",
   "remix-run/remix": "remix@3.2.0",
-  "withastro/astro": "@astrojs/vercel@11.0.18",
+  "withastro/astro": "@astrojs/vercel@11.0.20",
   "twilio/twilio-node": "6.2.0",
   "sendgrid/sendgrid-nodejs": "8.1.6",
   "supabase/supabase-js": "v2.119.0",
@@ -22,5 +22,5 @@
   "solana-labs/solana-web3.js": "v3.1.1",
   "ethers-io/ethers.js": "v6.17.0",
   "vitest-dev/vitest": "v5.1.0",
-  "microsoft/playwright": "v1.64.1"
+  "microsoft/playwright": "v1.65.0"
 }
