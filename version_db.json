@@ -3,7 +3,7 @@
   "stripe/stripe-node": "v23.1.0",
   "anthropics/anthropic-sdk-python": "v2.6.0",
   "langchain-ai/langchain": "langchain-core==1.7.6",
-  "langchain-ai/langchainjs": "@langchain/neo4j@0.1.30",
+  "langchain-ai/langchainjs": "@langchain/neo4j@0.1.31",
   "huggingface/transformers": "v5.22.2",
   "vercel/next.js": "v16.4.5",
   "remix-run/remix": "remix@3.2.0",
