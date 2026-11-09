@@ -1,5 +1,5 @@
 {
-  "openai/openai-python": "v3.47.0",
+  "openai/openai-python": "v3.48.0",
   "stripe/stripe-node": "v23.1.0",
   "anthropics/anthropic-sdk-python": "v2.6.0",
   "langchain-ai/langchain": "langchain-core==1.7.6",
@@ -7,7 +7,7 @@
   "huggingface/transformers": "v5.22.2",
   "vercel/next.js": "v16.4.5",
   "remix-run/remix": "remix@3.2.0",
-  "withastro/astro": "@astrojs/vercel@11.0.20",
+  "withastro/astro": "astro-vscode@2.17.3",
   "twilio/twilio-node": "6.3.0",
   "sendgrid/sendgrid-nodejs": "8.1.6",
   "supabase/supabase-js": "v2.119.0",
